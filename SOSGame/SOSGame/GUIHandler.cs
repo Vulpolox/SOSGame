@@ -43,9 +43,8 @@ namespace SOSGame
         private RadioButton generalGameButton;
 
 
-        // Record Game Pane
+        // Record Game Checkbox
         private CheckButton recordGameButton;  
-        private Grid recordGamePane;
 
 
         // Label for Current Turn
@@ -60,7 +59,7 @@ namespace SOSGame
         // Operation Button Pane
         private Button replayButton;
         private Button newGameButton;
-        private Grid operationPane;
+        private Grid operationsPane;
 
 
         // Constructor
@@ -78,7 +77,7 @@ namespace SOSGame
             outerGrid = new Grid
             {
                 RowSpacing = 150,
-                ColumnSpacing = 150,
+                ColumnSpacing = 100,
                 HorizontalAlignment = HorizontalAlignment.Center,
             };
 
@@ -205,7 +204,7 @@ namespace SOSGame
             // 2 x 1 pane for holding radio buttons for determining whether player is human/computer
             bluePlayerTypePane = new Grid
             {
-                RowSpacing = 20,
+                RowSpacing = 0,
                 ColumnSpacing = 8
             };
             for (int i = 0; i < 2; i++)
@@ -262,6 +261,227 @@ namespace SOSGame
                 }
             };
 
+            // set everthing's positions
+            Grid.SetRow(bluePlayerTypePane, 0);
+            Grid.SetColumn(bluePlayerTypePane, 0);
+            Grid.SetRow(bluePlayerButtonPane, 0);
+            Grid.SetColumn(bluePlayerButtonPane, 1);
+            Grid.SetRow(blueSButton, 0);
+            Grid.SetColumn(blueSButton, 0);
+            Grid.SetRow(blueOButton, 1);
+            Grid.SetColumn(blueOButton, 0);
+            Grid.SetRow(blueIsHumanButton, 0);
+            Grid.SetColumn(blueIsHumanButton, 0);
+            Grid.SetRow(blueIsComputerButton, 1);
+            Grid.SetColumn(blueIsComputerButton, 0);
+
+            // add s/o buttons to button pane
+            bluePlayerButtonPane.Widgets.Add(blueSButton);
+            bluePlayerButtonPane.Widgets.Add(blueOButton);
+
+            // add human/computer buttons to player type pane
+            bluePlayerTypePane.Widgets.Add(blueIsComputerButton);
+            bluePlayerTypePane.Widgets.Add(blueIsHumanButton);
+
+            // add inner panes to outer pane
+            combinedPane.Widgets.Add(bluePlayerButtonPane);
+            combinedPane.Widgets.Add(bluePlayerTypePane);
+
+            // set the position of the outer pane and add it to the outerGrid
+            Grid.SetRow(combinedPane, 1);
+            Grid.SetColumn(combinedPane, 0);
+            outerGrid.Widgets.Add(combinedPane);
+
+        // initialize the red player's human/computer and s/o button panes, arrange them into a 1 x 2 grid and add them to the outerGrid at (1, 2)
+
+            // 1 x 2 outer pane for holding the two button groups
+            Grid redCombinedPane = new Grid
+            {
+                RowSpacing = 8,
+                ColumnSpacing = 20
+            };
+            for (int i = 0; i < 2; i++)
+            {
+                redCombinedPane.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
+            }
+
+            // 2 x 1 pane for holding radio buttons for determining whether player is human/computer
+            redPlayerTypePane = new Grid
+            {
+                RowSpacing = 0,
+                ColumnSpacing = 8
+            };
+            for (int i = 0; i < 2; i++)
+            {
+                redPlayerTypePane.RowsProportions.Add(new Proportion(ProportionType.Auto));
+            }
+
+            // 2 x 1 pane for holding radio buttons for determining if player is placing s/o
+            redPlayerButtonPane = new Grid
+            {
+                RowSpacing = 20,
+                ColumnSpacing = 8
+            };
+            for (int i = 0; i < 2; i++)
+            {
+                redPlayerButtonPane.RowsProportions.Add(new Proportion(ProportionType.Auto));
+            }
+
+            // initialiaze the radio buttons
+            redSButton = new RadioButton
+            {
+                Content = new Label
+                {
+                    Text = "S",
+                    TextColor = Color.Red
+                }
+            };
+
+            redOButton = new RadioButton
+            {
+                Content = new Label
+                {
+                    Text = "O",
+                    TextColor = Color.Red
+                }
+            };
+
+            redIsHumanButton = new RadioButton
+
+            {
+                Content = new Label
+                {
+                    Text = "Human",
+                    TextColor = Color.Red
+                }
+            };
+
+            redIsComputerButton = new RadioButton
+            {
+                Content = new Label
+                {
+                    Text = "Computer",
+                    TextColor = Color.Red
+                }
+            };
+
+            // set everthing's positions
+            Grid.SetRow(redPlayerTypePane, 0);
+            Grid.SetColumn(redPlayerTypePane, 1);
+            Grid.SetRow(redPlayerButtonPane, 0);
+            Grid.SetColumn(redPlayerButtonPane, 0);
+            Grid.SetRow(redSButton, 0);
+            Grid.SetColumn(redSButton, 0);
+            Grid.SetRow(redOButton, 1);
+            Grid.SetColumn(redOButton, 0);
+            Grid.SetRow(redIsHumanButton, 0);
+            Grid.SetColumn(redIsHumanButton, 0);
+            Grid.SetRow(redIsComputerButton, 1);
+            Grid.SetColumn(redIsComputerButton, 0);
+
+            // add s/o buttons to button pane
+            redPlayerButtonPane.Widgets.Add(redSButton);
+            redPlayerButtonPane.Widgets.Add(redOButton);
+
+            // add human/computer buttons to player type pane
+            redPlayerTypePane.Widgets.Add(redIsComputerButton);
+            redPlayerTypePane.Widgets.Add(redIsHumanButton);
+
+            // add inner panes to outer pane
+            redCombinedPane.Widgets.Add(redPlayerButtonPane);
+            redCombinedPane.Widgets.Add(redPlayerTypePane);
+
+            // set the position of the outer pane and add it to the outerGrid
+            Grid.SetRow(redCombinedPane, 1);
+            Grid.SetColumn(redCombinedPane, 2);
+            outerGrid.Widgets.Add(redCombinedPane);
+
+        // initialize the checkbox for recording games and add it to the outerGrid at position (2, 0)
+
+            // initialize checkbox
+            recordGameButton = new CheckButton
+            {
+                Content = new Label
+                {
+                    Text = "  Record Next Game",
+                    TextColor = Color.Green
+                }
+            };
+
+            // set checkbox's position
+            Grid.SetRow(recordGameButton, 2);
+            Grid.SetColumn(recordGameButton, 0);
+
+            // add checkbox to the outerGrid
+            outerGrid.Widgets.Add(recordGameButton);
+
+        // initialize label for keeping track of current color's turn and add it to outerGrid at position (2, 1)
+
+
+            // initialize the label
+            currentTurnLabel = new Label
+            {
+                Text = "Current Turn: ",
+                TextColor = Color.Black
+            };
+
+            // set the position of the label
+            Grid.SetRow(currentTurnLabel, 2);
+            Grid.SetColumn(currentTurnLabel, 1);
+
+            // add the label to the outerGrid
+            outerGrid.Widgets.Add(currentTurnLabel);
+
+        // initialize the operation button pane and add it to the outerGrid at position (2, 2)
+
+            // initialize the pane
+            operationsPane = new Grid
+            {
+                RowSpacing = 10,
+                ColumnSpacing = 0
+            };
+
+            // add two rows to the pane
+            for (int i = 0; i < 2; i++)
+            {
+                operationsPane.RowsProportions.Add(new Proportion(ProportionType.Auto));
+            }
+
+            // initialize the operation buttons
+            newGameButton = new Button
+            {
+                Content = new Label
+                {
+                    Text = "New Game",
+                    TextColor = Color.LightBlue
+                }
+            };
+
+            replayButton = new Button
+            {
+                Content = new Label
+                {
+                    Text = "Replay Recording",
+                    TextColor = Color.LightBlue
+                }
+            };
+
+            // set the positions of the buttons
+            Grid.SetRow(newGameButton, 0);
+            Grid.SetColumn(newGameButton, 0);
+            Grid.SetRow(replayButton, 1);
+            Grid.SetColumn(replayButton, 0);
+
+            // set the position of the pane
+            Grid.SetRow(operationsPane, 2);
+            Grid.SetColumn(operationsPane, 2);
+
+            // add the buttons to the pane
+            operationsPane.Widgets.Add(newGameButton);
+            operationsPane.Widgets.Add(replayButton);
+
+            // add the operations pane to the outerGrid
+            outerGrid.Widgets.Add(operationsPane);
 
             // initialize _desktop
 
