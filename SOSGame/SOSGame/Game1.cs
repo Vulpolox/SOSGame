@@ -14,11 +14,18 @@ namespace SOSGame
 
         private GUIHandler _guiHandler;
 
+        // Other Graphics
+        Texture2D background;
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+
+            // set the window size
+            _graphics.PreferredBackBufferWidth = 1080;
+            _graphics.PreferredBackBufferHeight = 720;
         }
 
         protected override void Initialize()
@@ -27,6 +34,9 @@ namespace SOSGame
             // Initialize UI
             _guiHandler = new GUIHandler(this);
             _guiHandler.InitializeGUIElements();
+
+            // Initialize Other Graphics
+            background = Content.Load<Texture2D>("GrayBackground");
 
             base.Initialize();
         }
@@ -51,6 +61,14 @@ namespace SOSGame
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.LightGray);
+
+            // Draw Other Stuff
+            _spriteBatch.Begin();
+
+            _spriteBatch.Draw(background, new Vector2(0, 0), Color.White);
+
+            _spriteBatch.End();
+
 
             // Draw GUI Elements
             _guiHandler.Draw();

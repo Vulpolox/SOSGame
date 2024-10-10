@@ -61,6 +61,9 @@ namespace SOSGame
         private Button newGameButton;
         private Grid operationsPane;
 
+        // board
+        private Board board;
+
 
         // Constructor
         public GUIHandler(Game game)
@@ -93,7 +96,7 @@ namespace SOSGame
             Label sosLabel = new Label
             {
                 Text = "SOS",
-                TextColor = Color.Purple
+                TextColor = Color.Purple,
             };
 
             // set the label's location and add it to the outerGrid
@@ -118,10 +121,11 @@ namespace SOSGame
             // initialize the radio buttons
             simpleGameButton = new RadioButton
             {
+                IsPressed = true,
                 Content = new Label
                 {
                     Text = "Simple Game",
-                    TextColor = Color.Black
+                    TextColor = Color.Black,
                 }
             };
 
@@ -171,8 +175,9 @@ namespace SOSGame
             // initialize the board size selector spin button
             boardSizeButton = new SpinButton
             {
-                Minimum = 0,
-                Maximum = 10
+                Minimum = 3,
+                Maximum = 10,
+                Value = 3
             };
 
             // set the label and the spin button's positions and add them to the pane
@@ -226,6 +231,7 @@ namespace SOSGame
             // initialiaze the radio buttons
             blueSButton = new RadioButton
             {
+                IsPressed = true,
                 Content = new Label
                 {
                     Text = "S",
@@ -245,6 +251,7 @@ namespace SOSGame
             blueIsHumanButton = new RadioButton
 
             {
+                IsPressed = true,
                 Content = new Label
                 {
                     Text = "Human",
@@ -330,6 +337,7 @@ namespace SOSGame
             // initialiaze the radio buttons
             redSButton = new RadioButton
             {
+                IsPressed = true,
                 Content = new Label
                 {
                     Text = "S",
@@ -349,6 +357,7 @@ namespace SOSGame
             redIsHumanButton = new RadioButton
 
             {
+                IsPressed = true,
                 Content = new Label
                 {
                     Text = "Human",
@@ -466,6 +475,10 @@ namespace SOSGame
                 }
             };
 
+            // subscribe buttons to action listeners
+            newGameButton.Click += OnNewGameClick;
+            replayButton.Click += OnReplayClick;
+
             // set the positions of the buttons
             Grid.SetRow(newGameButton, 0);
             Grid.SetColumn(newGameButton, 0);
@@ -483,14 +496,42 @@ namespace SOSGame
             // add the operations pane to the outerGrid
             outerGrid.Widgets.Add(operationsPane);
 
-            // initialize _desktop
+        // initialize the board
+            board = new Board(this);
+
+        // initialize _desktop
 
             _desktop = new Desktop
             {
                 Root = outerGrid
             };
 
+            Console.WriteLine("Finished Initializing GUI"); // to disable console go to Project -> SOSGame Properties -> Change Output type
+
         }
+
+        // action listeners for buttons
+        public void OnNewGameClick(object sender, EventArgs e)
+        {
+            if (board != null)
+            {
+                board.ClearBoard();
+            }
+
+            board = new Board(this);
+        }
+
+        public void OnReplayClick(object sender, EventArgs e)
+        {
+            Console.WriteLine("TODO");
+        }
+
+        // GUI state getters
+        public bool IsRedComputer()  { return redIsComputerButton.IsPressed; }
+        public bool IsBlueComputer()  { return blueIsComputerButton.IsPressed; }
+        public bool IsSimpleGame()  { return simpleGameButton.IsPressed; }
+        public int GetBoardSize() { return (int)boardSizeButton.Value; }
+        public Grid GetOuterGrid()  { return this.outerGrid; }
 
 
         // method for drawing GUI to screen
