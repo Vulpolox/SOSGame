@@ -61,8 +61,8 @@ namespace SOSGame
         private Button newGameButton;
         private Grid operationsPane;
 
-        // board
-        private Board board;
+        // game manager
+        private GameInstance gameInstance;
 
 
         // Constructor
@@ -430,8 +430,10 @@ namespace SOSGame
             // initialize the label
             currentTurnLabel = new Label
             {
-                Text = "Current Turn: ",
-                TextColor = Color.Black
+                Text = "Current Turn: Blue",
+                TextColor = Color.Blue,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Top
             };
 
             // set the position of the label
@@ -496,8 +498,8 @@ namespace SOSGame
             // add the operations pane to the outerGrid
             outerGrid.Widgets.Add(operationsPane);
 
-        // initialize the board
-            board = new Board(this);
+            // initialize the game
+            this.gameInstance = new GameInstance(this);
 
         // initialize _desktop
 
@@ -513,12 +515,12 @@ namespace SOSGame
         // action listeners for buttons
         public void OnNewGameClick(object sender, EventArgs e)
         {
-            if (board != null)
+            if (this.gameInstance != null)
             {
-                board.ClearBoard();
+                gameInstance.ClearBoard();
             }
 
-            board = new Board(this);
+            this.gameInstance = new GameInstance(this);
         }
 
         public void OnReplayClick(object sender, EventArgs e)
@@ -529,9 +531,21 @@ namespace SOSGame
         // GUI state getters
         public bool IsRedComputer()  { return redIsComputerButton.IsPressed; }
         public bool IsBlueComputer()  { return blueIsComputerButton.IsPressed; }
+        public bool IsRedS() { return redSButton.IsPressed; }
+        public bool IsBlueS() {  return blueSButton.IsPressed; }
         public bool IsSimpleGame()  { return simpleGameButton.IsPressed; }
         public int GetBoardSize() { return (int)boardSizeButton.Value; }
         public Grid GetOuterGrid()  { return this.outerGrid; }
+
+
+        // method for updating the text and color of the player turn label
+        public void UpdateTurnLabel(bool isRedTurn)
+        {
+            String playerColorName = isRedTurn ? "Red" : "Blue";
+
+            this.currentTurnLabel.Text = String.Format("Current Turn: {0}", playerColorName);
+            this.currentTurnLabel.TextColor = isRedTurn ? Color.Red : Color.Blue;
+        }
 
 
         // method for drawing GUI to screen

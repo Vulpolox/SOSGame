@@ -23,7 +23,7 @@ namespace SOSGame
             this.columnIndex = c;
             this.textLabel = new Label
             {
-                Text = "S",
+                Text = " ",
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center
             };
