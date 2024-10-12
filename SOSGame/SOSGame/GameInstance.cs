@@ -195,7 +195,5 @@ namespace SOSGame
         public bool GetIsBlueTurn() { return this.isBlueTurn; }
         public int GetSize() { return this.size; }
         public Grid GetButtonGrid() { return this.buttonGrid; }
-
-
     }
 }

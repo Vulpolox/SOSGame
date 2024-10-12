@@ -113,14 +113,14 @@ namespace SOSGame
 
 
         // method for checking whether internalBoardState[r][c] is OOB
-        private bool _IsOutOfBounds(int r, int c)  { return (Math.Max(r, c) > this.boardSize); }
+        private bool _IsOutOfBounds(int r, int c)  { return (Math.Max(r, c) >= this.boardSize); }
 
 
         // method for returning the contents of internalBoardState[r][c] ; also returns "OOB" if passed indices correspond to OOB index
-        private String _internalBoardStateRef(int r, int c)
+        public String internalBoardStateRef(int r, int c)
         {
             if (_IsOutOfBounds(r, c)) { return "OOB"; }
-            else                      { return this.internalBoardState[r][c]; }
+            else { return this.internalBoardState[r][c]; }
         }
 
 
@@ -130,7 +130,7 @@ namespace SOSGame
 
 
         // algorithms
-        private bool _CheckForSOS(int previousMoveR, int previousMoveC)
+        public bool CheckForSOS(int previousMoveR, int previousMoveC)
         {
             return false;
             // TODO
