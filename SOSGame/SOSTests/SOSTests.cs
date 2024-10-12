@@ -159,14 +159,13 @@ namespace SOSTests
 
             // ACT
 
-            gameLogicHandler.ChangeTurns();  // change turns to blue's turn
             String testValue1 = gameLogicHandler.GetPlayerTurnColorName();
 
-            gameLogicHandler.ChangeTurns();  // change turns back to red's turn
+            gameLogicHandler.ChangeTurns();  // change turn to blue's turn
             String testValue2 = gameLogicHandler.GetPlayerTurnColorName();
 
-            String expectedValue1 = "Blue";
-            String expectedValue2 = "Red";
+            String expectedValue1 = "Red";
+            String expectedValue2 = "Blue";
 
             // Assert
 
