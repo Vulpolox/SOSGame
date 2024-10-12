@@ -27,6 +27,8 @@ namespace SOSGame
         private bool isRedTurn = false;     // flag for red player's turn
         private bool isBlueTurn = true;     // flag for blue player's turn
 
+        private GameLogicHandler gameLogicHandler;
+
         private Grid buttonGrid;                     // The board
         private List<List<GridButton>> buttonArray;  // Array for holding references to the cells ("GridButtons") on the board
 
@@ -36,15 +38,20 @@ namespace SOSGame
 
 
         // constructor
-        public GameInstance(GUIHandler GUIRef)
+        public GameInstance(GUIHandler GUIRef, GameLogicHandler gameLogicHandler)
         {
-            // get information from GUI
-            this.size = GUIRef.GetBoardSize();
-            this.outerGrid = GUIRef.GetOuterGrid();
-            this.isSimpleGame = GUIRef.IsSimpleGame();
-            this.isRedComputer = GUIRef.IsRedComputer();
-            this.isBlueComputer = GUIRef.IsBlueComputer();
+            // create references to the GUI and the gameLogicHandler
+            this.gameLogicHandler = gameLogicHandler;
             this.GUIRef = GUIRef;
+
+            // get game information from the gameLogicHandler
+            this.size = gameLogicHandler.GetBoardSize();
+            this.isSimpleGame = gameLogicHandler.IsSimpleGame();
+            this.isRedComputer = gameLogicHandler.IsRedComputer();
+            this.isBlueComputer = gameLogicHandler.IsBlueComputer();
+
+            // get ref to container on which to display board from the GUI
+            this.outerGrid = GUIRef.GetOuterGrid();
 
             // initialize the buttonArray
             this.buttonArray = new List<List<GridButton>>();
@@ -57,13 +64,6 @@ namespace SOSGame
             Grid.SetRow(buttonGrid, _r);
             Grid.SetColumn(buttonGrid, _c);
             this.outerGrid.Widgets.Add(buttonGrid);
-        }
-
-        // constructor overload for testing purposes
-        public GameInstance(GUIHandler testGUIRef, int testSize = 3, bool testIsSimpleGame = false, bool testIsRedComputer = false, bool testIsBlueComputer = false,
-            bool testIsBlueTurn = false, bool testIsRedTurn = false)
-        {
-
         }
 
 
@@ -141,22 +141,61 @@ namespace SOSGame
             }
         }
 
+        // method that returns the 'S' or the 'O' the current turn's player has selected in the GUI
+        public String GetSOChoice()
+        {
+            String playerSOChoice = "";
 
+            if (this.gameLogicHandler.IsRedTurn()) { playerSOChoice = this.GUIRef.IsRedS() ? "S" : "O"; }
+            else if (this.gameLogicHandler.IsBlueTurn()) { playerSOChoice = this.GUIRef.IsBlueS() ? "S" : "O"; }
+
+            return playerSOChoice;
+        }
+
+
+        // action listener for GridButton clicks
         public void OnGridButtonClick(object sender, EventArgs e)
         {
-            String playerSOChoice = "";                       // string for holding 'S' or 'O' from the radio buttons
+            // find out whether the current turn's player has selected an 'S' or an 'O'
+            // in GUI and return it as a String
+            String playerSOChoice = this.GetSOChoice();
 
-            if (this.isRedTurn)  { playerSOChoice = this.GUIRef.IsRedS() ? "S" : "O"; }
-            else if (this.isBlueTurn) { playerSOChoice = this.GUIRef.IsBlueS() ? "S" : "O"; }
+            // create a reference to the pressed button and its position
+            GridButton pressedButton = sender as GridButton;
+            int rowIndex = pressedButton.GetRowIndex();
+            int columnIndex = pressedButton.GetColumnIndex();
 
-            GridButton pressedButton = sender as GridButton;  // create reference to the GridButton that was clicked
-            pressedButton.SetText(playerSOChoice);            // put the player's choice of either an 'S' or an 'O' on the pressed button
-            pressedButton.Enabled = false;                    // disable the button so it can't be clicked in the future
-            this.ChangeTurns();                               // change turns (TEMPORARY until SOS sequence checking logic is implemented)
-            this.GUIRef.UpdateTurnLabel(this.isRedTurn);      // update the current turn label
+            // set the button's text to the 'S' or 'O' that was returned and disable it
+            pressedButton.SetText(playerSOChoice);            
+            pressedButton.Enabled = false;
+
+            // update the internal board state
+            this.gameLogicHandler.UpdateInternalBoardState(rowIndex, columnIndex, playerSOChoice);
+
+            // handle potential new SOSs
+            this.gameLogicHandler.HandleSOS(previousMoveRowIndex: rowIndex,
+                                            previousMoveColumnIndex: columnIndex);
+
+            // update the GUI turn label
+            this.GUIRef.UpdateTurnLabel(this.gameLogicHandler.IsRedTurn());
 
             Console.WriteLine(String.Format("Clicked Button At r = {0}, c = {1}", pressedButton.GetRowIndex(), pressedButton.GetColumnIndex()));
             Console.WriteLine(this.GetCell(pressedButton.GetRowIndex() , pressedButton.GetColumnIndex()));
         }
+
+
+        // getters (for testing)
+        public List<List<GridButton>> GetButtonArray() { return this.buttonArray; }
+        public bool GetIsSimpleGame() { return this.isSimpleGame; }
+        public bool GetIsRedS() { return this.isRedS; }
+        public bool GetIsBlueS() { return this.isBlueS; }
+        public bool GetIsRedComputer() { return this.isRedComputer; }
+        public bool GetIsBlueComputer() { return this.isBlueComputer; }
+        public bool GetIsRedTurn() { return this.isRedTurn; }
+        public bool GetIsBlueTurn() { return this.isBlueTurn; }
+        public int GetSize() { return this.size; }
+        public Grid GetButtonGrid() { return this.buttonGrid; }
+
+
     }
 }

@@ -44,7 +44,7 @@ namespace SOSGame
 
 
         // Record Game Checkbox
-        private CheckButton recordGameButton;  
+        private CheckButton recordGameButton;
 
 
         // Label for Current Turn
@@ -61,8 +61,9 @@ namespace SOSGame
         private Button newGameButton;
         private Grid operationsPane;
 
-        // game manager
+        // game instance
         private GameInstance gameInstance;
+        private GameLogicHandler gameLogicHandler;
 
 
         // Constructor
@@ -461,19 +462,27 @@ namespace SOSGame
             // initialize the operation buttons
             newGameButton = new Button
             {
+                Width = 200,
+                Height = 35,
                 Content = new Label
                 {
                     Text = "New Game",
-                    TextColor = Color.LightBlue
+                    TextColor = Color.LightBlue,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center
                 }
             };
 
             replayButton = new Button
             {
+                Width = 200,
+                Height = 35,
                 Content = new Label
                 {
                     Text = "Replay Recording",
-                    TextColor = Color.LightBlue
+                    TextColor = Color.LightBlue,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center
                 }
             };
 
@@ -498,8 +507,10 @@ namespace SOSGame
             // add the operations pane to the outerGrid
             outerGrid.Widgets.Add(operationsPane);
 
-            // initialize the game
-            this.gameInstance = new GameInstance(this);
+            // initialize the game and the logic handler
+            this.gameLogicHandler = new GameLogicHandler(this);
+            this.gameInstance = new GameInstance(this, this.gameLogicHandler);
+            
 
         // initialize _desktop
 
@@ -519,8 +530,8 @@ namespace SOSGame
             {
                 gameInstance.ClearBoard();
             }
-
-            this.gameInstance = new GameInstance(this);
+            this.gameLogicHandler = new GameLogicHandler(this);                 // create new GameLogicHandler with updated flags from the GUI
+            this.gameInstance = new GameInstance(this, this.gameLogicHandler);  // create a new GameInstance using information from the GUI and the GameLogicHandler
         }
 
         public void OnReplayClick(object sender, EventArgs e)
@@ -538,10 +549,30 @@ namespace SOSGame
         public Grid GetOuterGrid()  { return this.outerGrid; }
 
 
+        // Widget getters (for testing)
+        public RadioButton GetRedIsHumanButton() { return this.redIsHumanButton; }
+        public RadioButton GetRedIsComputerButton() { return this.redIsComputerButton; }
+        public RadioButton GetBlueIsHumanButton() { return this.blueIsHumanButton; }
+        public RadioButton GetBlueIsComputerButton() {return this.blueIsComputerButton; }
+        public RadioButton GetRedSButton() { return this.redSButton; }
+        public RadioButton GetBlueSButton() {return this.blueSButton; }
+        public RadioButton GetRedOButton() { return this.redOButton; }
+        public RadioButton GetBlueOButton() { return this.blueOButton; }
+        public RadioButton GetSimpleGameButton() { return this.simpleGameButton; }
+        public RadioButton GetGeneralGameButton() { return this.generalGameButton; }
+        public SpinButton GetBoardSizeButton() { return this.boardSizeButton; }
+        public Button GetNewGameButton() { return this.newGameButton; }
+        public Button GetReplayButton() { return this.replayButton; }
+        public CheckButton GetRecordGameButton() { return this.recordGameButton; }
+        public GameInstance GetGameInstance() { return this.gameInstance; }
+
+
+
+
         // method for updating the text and color of the player turn label
         public void UpdateTurnLabel(bool isRedTurn)
         {
-            String playerColorName = isRedTurn ? "Red" : "Blue";
+            String playerColorName = this.gameLogicHandler.GetPlayerTurnColorName();
 
             this.currentTurnLabel.Text = String.Format("Current Turn: {0}", playerColorName);
             this.currentTurnLabel.TextColor = isRedTurn ? Color.Red : Color.Blue;

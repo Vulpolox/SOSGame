@@ -12,7 +12,7 @@ namespace SOSGame
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        private GUIHandler _guiHandler;
+        protected GUIHandler _guiHandler;
 
         // Other Graphics
         Texture2D background;
@@ -40,6 +40,7 @@ namespace SOSGame
 
             base.Initialize();
         }
+
 
         protected override void LoadContent()
         {
