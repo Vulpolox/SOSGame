@@ -2,7 +2,7 @@
 
 # Soruce Code Quick Access + Description
 
-## SOSTest.cs
+## SOSTests.cs
 
 Contains the program's unit tests
 
