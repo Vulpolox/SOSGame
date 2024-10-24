@@ -11,35 +11,43 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace SOSGame
 {
-    public class GameInstance
+    public abstract class GameInstance
     {
         // reference of GUI
-        private GUIHandler GUIRef;
+        protected GUIHandler GUIRef;
+
+        // reference to Game
+        protected Game GameRef;
 
         // information from the GUI
-        private int size;             // dimensions of the board
-        private bool isRedS;          // flag for whether the red player has selected an S
-        private bool isBlueS;         // flag for whether the blue player has selected an S
-        private bool isSimpleGame;    // flag for whether game mode is set to simple
-        private bool isRedComputer;   // flag for whether player is computer
-        private bool isBlueComputer;  // flag for whether player is computer
+        protected int size;             // dimensions of the board
+        protected bool isRedS;          // flag for whether the red player has selected an S
+        protected bool isBlueS;         // flag for whether the blue player has selected an S
+        protected bool isSimpleGame;    // flag for whether game mode is set to simple
+        protected bool isRedComputer;   // flag for whether player is computer
+        protected bool isBlueComputer;  // flag for whether player is computer
 
-        private bool isRedTurn = false;     // flag for red player's turn
-        private bool isBlueTurn = true;     // flag for blue player's turn
+        // player information
+        protected bool isRedTurn = false;     // flag for red player's turn
+        protected bool isBlueTurn = true;     // flag for blue player's turn
 
-        private GameLogicHandler gameLogicHandler;
+        protected GameLogicHandler gameLogicHandler;
 
-        private Grid buttonGrid;                     // The board
-        private List<List<GridButton>> buttonArray;  // Array for holding references to the cells ("GridButtons") on the board
+        protected Grid buttonGrid;                     // The board
+        protected List<List<GridButton>> buttonArray;  // Array for holding references to the cells ("GridButtons") on the board
 
-        Grid outerGrid;               // the outer grid on which the board will be displayed
-        private const int _r = 1;     // the row index at which the board will be displayed on the outer grid
-        private const int _c = 1;     // the column index at which the board will be displayed on the outer grid
+        // board location information
+        Grid outerGrid;                 // the outer grid on which the board will be displayed
+        protected const int _r = 1;     // the row index at which the board will be displayed on the outer grid
+        protected const int _c = 1;     // the column index at which the board will be displayed on the outer grid
 
 
         // constructor
-        public GameInstance(GUIHandler GUIRef, GameLogicHandler gameLogicHandler)
+        public GameInstance(GUIHandler GUIRef, GameLogicHandler gameLogicHandler, int recordedSize = -1)
         {
+            // create reference to the running Game
+            this.GameRef = MyraEnvironment.Game;
+
             // create references to the GUI and the gameLogicHandler
             this.gameLogicHandler = gameLogicHandler;
             this.GUIRef = GUIRef;
@@ -60,15 +68,19 @@ namespace SOSGame
             GUIRef.UpdateTurnLabel(isRedTurn: this.isRedTurn);
 
             // initialize the board and place it in the outerGrid
-            this.buttonGrid = InitializeBoard();
+            int finalSize = recordedSize != -1 ? recordedSize : this.size;
+            this.buttonGrid = InitializeBoard(finalSize);
             Grid.SetRow(buttonGrid, _r);
             Grid.SetColumn(buttonGrid, _c);
             this.outerGrid.Widgets.Add(buttonGrid);
+
+            // if the player who is up first is a computer and it is not a game recording, generate and handle its move
+            if (this.isBlueComputer && recordedSize != -1)  { HandleComputerMove(); }
         }
 
 
         // creates and returns a reference to the grid of buttons used for the board
-        public Grid InitializeBoard()
+        public Grid InitializeBoard(int size)
         {
             Grid returnGrid = new Grid
             {
@@ -78,7 +90,7 @@ namespace SOSGame
                 Height = 300
             };
 
-            buttonArray.Clear();
+            this.buttonArray.Clear();
 
             List<GridButton> rowToAdd = new List<GridButton>();
 
@@ -89,12 +101,12 @@ namespace SOSGame
                 returnGrid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 1));
             }
 
-            for (int r = 0; r < this.size; r++)
+            for (int r = 0; r < size; r++)
             {
-                for (int c = 0; c < this.size; c++)
+                for (int c = 0; c < size; c++)
                 {
 
-                    // initialize the GridButton that will be added to the board
+                    // initialize the GridButton that will be added to the board and subscribe it to action listener
                     GridButton buttonToAdd = new GridButton(r, c);
                     buttonToAdd.Click += OnGridButtonClick;
                     
@@ -114,16 +126,9 @@ namespace SOSGame
             return returnGrid;
         }
 
-        public void ClearBoard()
-        {
-            buttonGrid.Widgets.Clear();
-        }
+        public void ClearBoard()  { buttonGrid.Widgets.Clear(); }
 
-        public void ChangeTurns()
-        {
-            this.isRedTurn = !this.isRedTurn;
-            this.isBlueTurn = !this.isBlueTurn;
-        }
+        public void ChangeTurns()  { this.gameLogicHandler.ChangeTurns(); }
 
 
         public String GetCell(int r, int c)
@@ -156,6 +161,7 @@ namespace SOSGame
         // action listener for GridButton clicks
         public void OnGridButtonClick(object sender, EventArgs e)
         {
+
             // find out whether the current turn's player has selected an 'S' or an 'O'
             // in GUI and return it as a String
             String playerSOChoice = this.GetSOChoice();
@@ -165,23 +171,106 @@ namespace SOSGame
             int rowIndex = pressedButton.GetRowIndex();
             int columnIndex = pressedButton.GetColumnIndex();
 
-            // set the button's text to the 'S' or 'O' that was returned and disable it
-            pressedButton.SetText(playerSOChoice);            
-            pressedButton.Enabled = false;
+            // create and process a move
+            MoveInfo move = new MoveInfo(rowIndex, columnIndex, playerSOChoice);
+            move.TurnBit = this.gameLogicHandler.IsBlueTurn() ? 0 : 1;
+            HandleMove(move);
 
-            // update the internal board state
-            this.gameLogicHandler.UpdateInternalBoardState(rowIndex, columnIndex, playerSOChoice);
+            // get SOS information and handle it
+            SOSInfo sosInfo = this.gameLogicHandler.GetSOSInfo(move);
+            HandleSOS(sosInfo);
 
-            // handle potential new SOSs
-            this.gameLogicHandler.HandleSOS(previousMoveRowIndex: rowIndex,
-                                            previousMoveColumnIndex: columnIndex);
+            // if the board is full, handle whether to call a draw or to tally points
+            if (gameLogicHandler.IsBoardFull()) { HandleFullBoard(); }
 
             // update the GUI turn label
             this.GUIRef.UpdateTurnLabel(this.gameLogicHandler.IsRedTurn());
 
+            // if the next player up is a computer, have it move
+            if (IsComputerTurnNext()) { HandleComputerMove(); }
+
             Console.WriteLine(String.Format("Clicked Button At r = {0}, c = {1}", pressedButton.GetRowIndex(), pressedButton.GetColumnIndex()));
             Console.WriteLine(this.GetCell(pressedButton.GetRowIndex() , pressedButton.GetColumnIndex()));
+
         }
+
+
+        // method for generating/handling computer-made moves
+        public void HandleComputerMove()
+        {
+            // TODO: add a slight delay using coroutines so computer moves don't happen instantly
+
+            // generate and handle move made by computer
+            MoveInfo computerMove = this.gameLogicHandler.GenerateComputerMove();
+            HandleMove(computerMove);
+
+            // get SOS information and handle it
+            SOSInfo sosInfo = this.gameLogicHandler.GetSOSInfo(computerMove);
+            HandleSOS(sosInfo);
+
+            // if the board is full, handle whether to call a draw or to tally points
+            if (gameLogicHandler.IsBoardFull()) { HandleFullBoard(); }
+
+            // update the GUI turn label
+            this.GUIRef.UpdateTurnLabel(this.gameLogicHandler.IsRedTurn());
+
+            // if the next player up is a computer, have it move (this should only happen during fully computer games)
+            if (IsComputerTurnNext()) { HandleComputerMove(); }
+        }
+
+
+        // abstract methods
+        public abstract void HandleSOS(SOSInfo sosInfo);
+        public abstract void HandleFullBoard();
+
+
+        // method for winning game
+        public void Win(bool isRedWon)
+        {
+            // disable the remaining buttons
+            foreach (var buttonRow in this.buttonArray)
+            {
+                foreach (var gridButton in buttonRow)
+                {
+                    gridButton.Enabled = false;
+                }
+            }
+        }
+
+
+        // method for handling moves made by computers, humans, or recordings thereof
+        public void HandleMove(MoveInfo moveInfo)
+        {
+            // unpack variables
+            int columnIndex = moveInfo.ColumnIndex;
+            int rowIndex = moveInfo.RowIndex;
+            String moveLetter = moveInfo.MoveLetter;
+
+            // get reference to button on which the move was performed
+            GridButton pressedButton = this.buttonArray[rowIndex][columnIndex];
+
+            // update the button: set the text to moveLetter and disable it
+            pressedButton.SetText(moveLetter);
+            pressedButton.Enabled = false;
+
+            // update the internal board state
+            this.gameLogicHandler.UpdateInternalBoardState(rowIndex, columnIndex, moveLetter);
+        }
+
+
+        // method for determining if the next turn is to be made by a computer
+        public bool IsComputerTurnNext()
+        {
+            String playerTurn = gameLogicHandler.GetPlayerTurnColorName();
+
+            if (playerTurn == "Red" && this.isBlueComputer) { return true; }
+            else if (playerTurn == "Blue" && this.isRedComputer) { return true; }
+            else { return false; }
+        }
+
+
+        
+
 
 
         // getters (for testing)

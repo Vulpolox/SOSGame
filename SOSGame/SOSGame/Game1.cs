@@ -5,6 +5,9 @@ using Microsoft.Xna.Framework.Input;
 using Myra;
 using Myra.Graphics2D.UI;
 
+// note: for record game feature, use Monogame.Extend for coroutine support
+// for delays between moves
+
 namespace SOSGame
 {
     public class Game1 : Game

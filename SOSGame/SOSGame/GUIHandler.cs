@@ -509,7 +509,7 @@ namespace SOSGame
 
             // initialize the game and the logic handler
             this.gameLogicHandler = new GameLogicHandler(this);
-            this.gameInstance = new GameInstance(this, this.gameLogicHandler);
+            this.gameInstance = new SimpleGameInstance(this, this.gameLogicHandler);
             
 
         // initialize _desktop
@@ -531,7 +531,14 @@ namespace SOSGame
                 gameInstance.ClearBoard();
             }
             this.gameLogicHandler = new GameLogicHandler(this);                 // create new GameLogicHandler with updated flags from the GUI
-            this.gameInstance = new GameInstance(this, this.gameLogicHandler);  // create a new GameInstance using information from the GUI and the GameLogicHandler
+
+            // initialize game based on specified settings
+            if (!IsRecordedGame()) { this.gameInstance = IsSimpleGame() ? 
+                                                         new SimpleGameInstance(this, this.gameLogicHandler) : 
+                                                         new GeneralGameInstance(this, this.gameLogicHandler); }
+            else { this.gameInstance = IsSimpleGame() ? 
+                                                         new SimpleRecordedGameInstance(this, this.gameLogicHandler) : 
+                                                         new GeneralRecordedGameInstance(this, this.gameLogicHandler); }
         }
 
         public void OnReplayClick(object sender, EventArgs e)
@@ -545,6 +552,7 @@ namespace SOSGame
         public bool IsRedS() { return redSButton.IsPressed; }
         public bool IsBlueS() {  return blueSButton.IsPressed; }
         public bool IsSimpleGame()  { return simpleGameButton.IsPressed; }
+        public bool IsRecordedGame() {  return recordGameButton.IsPressed; }
         public int GetBoardSize() { return (int)boardSizeButton.Value; }
         public Grid GetOuterGrid()  { return this.outerGrid; }
 
