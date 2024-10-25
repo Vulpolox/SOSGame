@@ -43,6 +43,10 @@ namespace SOSGame
         private RadioButton generalGameButton;
 
 
+        // Label for keeping track of score in General Game
+        public Label ScoreLabel { get; set; }
+
+
         // Record Game Checkbox
         private CheckButton recordGameButton;
 
@@ -94,16 +98,16 @@ namespace SOSGame
 
         // Create 'SOS' Label and add it to outerGrid at (0, 0)
 
-            Label sosLabel = new Label
+            this.ScoreLabel = new Label
             {
-                Text = "SOS",
+                Text = "",
                 TextColor = Color.Purple,
             };
 
             // set the label's location and add it to the outerGrid
-            Grid.SetColumn(sosLabel, 0);
-            Grid.SetRow(sosLabel, 0);
-            outerGrid.Widgets.Add(sosLabel);
+            Grid.SetColumn(this.ScoreLabel, 0);
+            Grid.SetRow(this.ScoreLabel, 0);
+            outerGrid.Widgets.Add(this.ScoreLabel);
 
         // Initialize gameTypeButtonPane and add it to the outerGrid at (0, 1)
 
@@ -450,19 +454,19 @@ namespace SOSGame
             operationsPane = new Grid
             {
                 RowSpacing = 10,
-                ColumnSpacing = 0
+                ColumnSpacing = 10
             };
 
-            // add two rows to the pane
+            // add two columns to the pane
             for (int i = 0; i < 2; i++)
             {
-                operationsPane.RowsProportions.Add(new Proportion(ProportionType.Auto));
+                operationsPane.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
             }
 
             // initialize the operation buttons
             newGameButton = new Button
             {
-                Width = 200,
+                Width = 100,
                 Height = 35,
                 Content = new Label
                 {
@@ -475,7 +479,7 @@ namespace SOSGame
 
             replayButton = new Button
             {
-                Width = 200,
+                Width = 150,
                 Height = 35,
                 Content = new Label
                 {
@@ -493,8 +497,8 @@ namespace SOSGame
             // set the positions of the buttons
             Grid.SetRow(newGameButton, 0);
             Grid.SetColumn(newGameButton, 0);
-            Grid.SetRow(replayButton, 1);
-            Grid.SetColumn(replayButton, 0);
+            Grid.SetRow(replayButton, 0);
+            Grid.SetColumn(replayButton, 1);
 
             // set the position of the pane
             Grid.SetRow(operationsPane, 2);
@@ -529,6 +533,7 @@ namespace SOSGame
             // clean up the previous instance
             if (this.gameInstance != null)
             {
+                this.ResetScoreLabel();
                 gameInstance.ClearBoard();
                 // TODO: erase drawn lines
             }
@@ -602,6 +607,16 @@ namespace SOSGame
         {
             var messageBox = Dialog.CreateMessageBox("SOS Message", message);
             messageBox.ShowModal(_desktop);
+        }
+
+        // method for resetting the ScoreLabel
+        public void ResetScoreLabel()  { this.ScoreLabel.Text = ""; }
+
+        // method for updating the ScoreLabel
+        public void UpdateScoreLabel(int blueScore, int redScore)
+        {
+            String scoreString = $"Scores:\n   Blue: {blueScore, 2}\n    Red: {redScore, 2}";
+            this.ScoreLabel.Text = scoreString;
         }
     }
 }

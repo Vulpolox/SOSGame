@@ -37,3 +37,17 @@
 /processorParam:TextureFormat=Color
 /build:SunsetBG.jpg
 
+#begin VerdanaBig.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:VerdanaBig.spritefont
+
+#begin VerdanaSmall.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:VerdanaSmall.spritefont
+

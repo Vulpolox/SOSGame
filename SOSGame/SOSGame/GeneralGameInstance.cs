@@ -23,6 +23,8 @@ namespace SOSGame
         {
             this.blueScore = 0; 
             this.redScore = 0;
+
+            this.GUIRef.UpdateScoreLabel(blueScore, redScore);
         }
 
 
@@ -41,6 +43,9 @@ namespace SOSGame
                 else if (gameLogicHandler.GetPlayerTurnColorName() == "Red") { this.redScore += moveScore; }
                 else { Console.WriteLine("Error in General Game HandleSOS()"); }
             }
+
+            // update the ScoreLabel of the GUI
+            this.GUIRef.UpdateScoreLabel(blueScore, redScore);
 
             // when the board fills up, call HandleFullBoard
             if (this.gameLogicHandler.IsBoardFull()) { this.HandleFullBoard(); }
