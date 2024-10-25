@@ -78,12 +78,6 @@ namespace SOSGame
             if (this.isBlueComputer && recordedSize != -1)  { HandleComputerMove(); }
         }
 
-        // destructor
-        ~GameInstance()
-        {
-            this.ClearBoard();
-        }
-
 
         // creates and returns a reference to the grid of buttons used for the board
         public Grid InitializeBoard(int size)
@@ -93,7 +87,8 @@ namespace SOSGame
                 RowSpacing = 1,
                 ColumnSpacing = 1,
                 Width = 300,
-                Height = 300
+                Height = 300,
+                HorizontalAlignment = HorizontalAlignment.Center,
             };
 
             this.buttonArray.Clear();

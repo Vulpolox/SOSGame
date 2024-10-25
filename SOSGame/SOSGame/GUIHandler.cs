@@ -8,6 +8,8 @@ using Myra;
 using Myra.Graphics2D.UI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using FontStashSharp;
+using System.IO;
 
 namespace SOSGame
 {
@@ -15,6 +17,10 @@ namespace SOSGame
     {
         private Desktop _desktop;   // Myra Desktop object for drawing UI elements to the screen
         private Grid outerGrid;     // Outer grid for holding the main UI elements of the SOS game
+
+
+        // FontStashSharp Font System
+        private FontSystem fontSystem;
 
 
         // Human or Computer Radio Button Panes
@@ -80,7 +86,32 @@ namespace SOSGame
         public void InitializeGUIElements()
         {
 
-        // Initialize outerGrid
+        // Initialize font system
+
+            //Console.WriteLine(Directory.GetCurrentDirectory());
+
+            // read in the font
+            byte[] ttfData;
+            try
+            {
+                ttfData = File.ReadAllBytes(@"..\..\..\Content\Commodore Angled v1.2.ttf"); // figuring out the relative path was a pain in the ass
+            }
+            catch (FileNotFoundException)
+            {
+                Console.WriteLine("Font file not found. Make sure the path is correct.");
+                return;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while reading the font file: {ex.Message}");
+                return;
+            }
+
+            // initialize the font system and add the loaded font
+            this.fontSystem = new FontSystem();
+            fontSystem.AddFont(ttfData);
+
+            // Initialize outerGrid
 
             outerGrid = new Grid
             {
@@ -96,11 +127,12 @@ namespace SOSGame
                 outerGrid.RowsProportions.Add(new Proportion(ProportionType.Auto));
             }
 
-        // Create 'SOS' Label and add it to outerGrid at (0, 0)
+            // Create 'SOS' Label and add it to outerGrid at (0, 0)
 
             this.ScoreLabel = new Label
             {
                 Text = "",
+                Font = this.fontSystem.GetFont(14),
                 TextColor = Color.Purple,
             };
 
@@ -130,6 +162,7 @@ namespace SOSGame
                 Content = new Label
                 {
                     Text = "Simple Game",
+                    Font = this.fontSystem.GetFont(14),
                     TextColor = Color.Black,
                 }
             };
@@ -139,6 +172,7 @@ namespace SOSGame
                 Content = new Label
                 {
                     Text = "General Game",
+                    Font = this.fontSystem.GetFont(14),
                     TextColor = Color.Black
                 }
             };
@@ -174,12 +208,14 @@ namespace SOSGame
             Label boardSizeLabel = new Label
             {
                 Text = "Board Size: ",
+                Font = this.fontSystem.GetFont(14),
                 TextColor = Color.Black
             };
 
             // initialize the board size selector spin button
             boardSizeButton = new SpinButton
             {
+                Width = 75,
                 Minimum = 3,
                 Maximum = 10,
                 Value = 3
@@ -204,7 +240,8 @@ namespace SOSGame
             Grid combinedPane = new Grid
             {
                 RowSpacing = 8,
-                ColumnSpacing = 20
+                ColumnSpacing = 20,
+                VerticalAlignment = VerticalAlignment.Center,
             };
             for (int i = 0; i < 2; i++)
             {
@@ -240,6 +277,7 @@ namespace SOSGame
                 Content = new Label
                 {
                     Text = "S",
+                    Font = this.fontSystem.GetFont(14),
                     TextColor = Color.Blue
                 }
             };
@@ -249,6 +287,7 @@ namespace SOSGame
                 Content = new Label
                 {
                     Text = "O",
+                    Font = this.fontSystem.GetFont(14),
                     TextColor = Color.Blue
                 }
             };
@@ -260,6 +299,7 @@ namespace SOSGame
                 Content = new Label
                 {
                     Text = "Human",
+                    Font = this.fontSystem.GetFont(14),
                     TextColor = Color.Blue
                 }
             };
@@ -269,6 +309,7 @@ namespace SOSGame
                 Content = new Label
                 {
                     Text = "Computer",
+                    Font = this.fontSystem.GetFont(14),
                     TextColor = Color.Blue
                 }
             };
@@ -310,7 +351,9 @@ namespace SOSGame
             Grid redCombinedPane = new Grid
             {
                 RowSpacing = 8,
-                ColumnSpacing = 20
+                ColumnSpacing = 20,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Center
             };
             for (int i = 0; i < 2; i++)
             {
@@ -346,6 +389,7 @@ namespace SOSGame
                 Content = new Label
                 {
                     Text = "S",
+                    Font = this.fontSystem.GetFont(14),
                     TextColor = Color.Red
                 }
             };
@@ -355,6 +399,7 @@ namespace SOSGame
                 Content = new Label
                 {
                     Text = "O",
+                    Font = this.fontSystem.GetFont(14),
                     TextColor = Color.Red
                 }
             };
@@ -366,6 +411,7 @@ namespace SOSGame
                 Content = new Label
                 {
                     Text = "Human",
+                    Font = this.fontSystem.GetFont(14),
                     TextColor = Color.Red
                 }
             };
@@ -375,6 +421,7 @@ namespace SOSGame
                 Content = new Label
                 {
                     Text = "Computer",
+                    Font = this.fontSystem.GetFont(14),
                     TextColor = Color.Red
                 }
             };
@@ -418,6 +465,7 @@ namespace SOSGame
                 Content = new Label
                 {
                     Text = "  Record Next Game",
+                    Font = this.fontSystem.GetFont(14),
                     TextColor = Color.Green
                 }
             };
@@ -436,6 +484,7 @@ namespace SOSGame
             currentTurnLabel = new Label
             {
                 Text = "Current Turn: Blue",
+                Font = this.fontSystem.GetFont(14),
                 TextColor = Color.Blue,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Top
@@ -467,10 +516,11 @@ namespace SOSGame
             newGameButton = new Button
             {
                 Width = 100,
-                Height = 35,
+                Height = 50,
                 Content = new Label
                 {
-                    Text = "New Game",
+                    Text = "New\nGame",
+                    Font = this.fontSystem.GetFont(14),
                     TextColor = Color.LightBlue,
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Center
@@ -479,11 +529,12 @@ namespace SOSGame
 
             replayButton = new Button
             {
-                Width = 150,
-                Height = 35,
+                Width = 100,
+                Height = 50,
                 Content = new Label
                 {
-                    Text = "Replay Recording",
+                    Text = "Replay\nRecording",
+                    Font = this.fontSystem.GetFont(14),
                     TextColor = Color.LightBlue,
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Center
@@ -590,7 +641,7 @@ namespace SOSGame
         {
             String playerColorName = this.gameLogicHandler.GetPlayerTurnColorName();
 
-            this.currentTurnLabel.Text = String.Format("Current Turn: {0}", playerColorName);
+            this.currentTurnLabel.Text = $"Current Turn: {playerColorName, 4}";
             this.currentTurnLabel.TextColor = isRedTurn ? Color.Red : Color.Blue;
         }
 
@@ -615,7 +666,7 @@ namespace SOSGame
         // method for updating the ScoreLabel
         public void UpdateScoreLabel(int blueScore, int redScore)
         {
-            String scoreString = $"Scores:\n   Blue: {blueScore, 2}\n    Red: {redScore, 2}";
+            String scoreString = $"Scores\n   Blue: {blueScore, 2}\n    Red: {redScore, 2}";
             this.ScoreLabel.Text = scoreString;
         }
     }
