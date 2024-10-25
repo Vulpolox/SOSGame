@@ -20,14 +20,29 @@ namespace SOSGame
 
         public override void HandleSOS(SOSInfo sosInfo)
         {
-            this.gameLogicHandler.ChangeTurns();
-            Console.WriteLine("Todo: handle sos for simple game");
+            // if the player didn't make an SOS in their turn
+            if (sosInfo.NumSOS == 0)
+            {
+                // switch turns
+                this.ChangeTurns();
+
+                // if board is full, call HandleFullBoard() to delcare a tie
+                if (this.gameLogicHandler.IsBoardFull()) { HandleFullBoard(); }
+            }
+            
+            // if the player makes an SOS, declare them the winner
+            else if (sosInfo.NumSOS > 0)
+            {
+                // initialize a boolean for whether red or blue won and pass it to the Win() function
+                bool isRedWon = this.isRedTurn;
+                this.Win(isRedWon);
+            }
+
         }
 
-        public override void HandleFullBoard()
-        {
-            throw new NotImplementedException();
-        }
+        // HandleFullBoard should only be called if the board is filled
+        // by a move that won't create an SOS in a simple game
+        public override void HandleFullBoard()  { this.Draw(); }
 
     }
 }

@@ -159,8 +159,6 @@ namespace SOSGame
                     {
                         // each time these conditions are met, add an SOS to the SOSInfo object
                         sosInfo.AddSOS(startingPos: moveCoords, direction: direction);
-
-                        Console.WriteLine("Found SOS");
                     }
                 }
             }
@@ -168,7 +166,7 @@ namespace SOSGame
             // if the move letter is an 'O'
             else if (move.MoveLetter == "O")
             {
-               // check in the 4 pairs of opposite directions for two 'S's
+               // check the 4 pairs of opposite directions for two 'S's
                
                 // UP and DOWN
                 if (internalBoardStateRef(moveCoords + DirectionVectors.Up) == "S" &&
@@ -177,7 +175,6 @@ namespace SOSGame
                     sosInfo.AddSOS(startingPos: (moveCoords + DirectionVectors.Down),
                                    direction: DirectionVectors.Up);
 
-                    Console.WriteLine("Found SOS");
                 }
 
                 // LEFT and RIGHT
@@ -187,7 +184,6 @@ namespace SOSGame
                     sosInfo.AddSOS(startingPos: (moveCoords + DirectionVectors.Left),
                                    direction: DirectionVectors.Right);
 
-                    Console.WriteLine("Found SOS");
                 }
 
                 // UP LEFT and DOWN RIGHT
@@ -197,7 +193,6 @@ namespace SOSGame
                     sosInfo.AddSOS(startingPos: (moveCoords + DirectionVectors.DownRight),
                                    direction: DirectionVectors.UpLeft);
 
-                    Console.WriteLine("Found SOS");
                 }
 
                 // UP RIGHT and DOWN LEFT
@@ -207,7 +202,6 @@ namespace SOSGame
                     sosInfo.AddSOS(startingPos: (moveCoords + DirectionVectors.DownLeft),
                                    direction: DirectionVectors.UpRight);
 
-                    Console.WriteLine("Found SOS");
                 }
 
 
@@ -218,6 +212,8 @@ namespace SOSGame
             {
                 Console.WriteLine($"Invalid Move Letter {move.MoveLetter}");
             }
+
+            Console.WriteLine($"Found {sosInfo.NumSOS} SOSs");
 
             return sosInfo;
         }

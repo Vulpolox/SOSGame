@@ -526,10 +526,13 @@ namespace SOSGame
         // action listeners for buttons
         public void OnNewGameClick(object sender, EventArgs e)
         {
+            // clean up the previous instance
             if (this.gameInstance != null)
             {
                 gameInstance.ClearBoard();
+                // TODO: erase drawn lines
             }
+
             this.gameLogicHandler = new GameLogicHandler(this);                 // create new GameLogicHandler with updated flags from the GUI
 
             // initialize game based on specified settings
@@ -591,6 +594,14 @@ namespace SOSGame
         public void Draw()
         {
             _desktop.Render();
+        }
+
+
+        // method for displaying message boxes
+        public void DisplayMessage(String message)
+        {
+            var messageBox = Dialog.CreateMessageBox("SOS Message", message);
+            messageBox.ShowModal(_desktop);
         }
     }
 }

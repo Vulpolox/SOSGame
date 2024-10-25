@@ -13,19 +13,52 @@ namespace SOSGame
 {
     public class GeneralGameInstance : GameInstance
     {
+
+        // instance variables
+        private int blueScore;
+        private int redScore;
+
+        // constructor
         public GeneralGameInstance(GUIHandler GUIRef, GameLogicHandler gameLogicHandler) : base(GUIRef, gameLogicHandler)
         {
-
+            this.blueScore = 0; 
+            this.redScore = 0;
         }
+
 
         public override void HandleSOS(SOSInfo sosInfo)
         {
-            throw new NotImplementedException();
+            // unpack score into variable for readability
+            int moveScore = sosInfo.NumSOS;
+
+            // if no points were earned, change turns
+            if (moveScore == 0) { this.ChangeTurns(); }
+
+            // otherwise, add the score to the player who made the move and let them go again
+            else
+            {
+                if (gameLogicHandler.GetPlayerTurnColorName() == "Blue") { this.blueScore += moveScore; }
+                else if (gameLogicHandler.GetPlayerTurnColorName() == "Red") { this.redScore += moveScore; }
+                else { Console.WriteLine("Error in General Game HandleSOS()"); }
+            }
+
+            // when the board fills up, call HandleFullBoard
+            if (this.gameLogicHandler.IsBoardFull()) { this.HandleFullBoard(); }
         }
+
 
         public override void HandleFullBoard()
         {
-            throw new NotImplementedException();
+            bool isRedWon;
+
+            if (this.blueScore == this.redScore) { this.Draw(); }
+            else 
+            { 
+                isRedWon = this.redScore > this.blueScore ? true : false;
+                this.Win(isRedWon);
+            }
+
         }
+
     }
 }

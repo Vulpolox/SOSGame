@@ -78,6 +78,12 @@ namespace SOSGame
             if (this.isBlueComputer && recordedSize != -1)  { HandleComputerMove(); }
         }
 
+        // destructor
+        ~GameInstance()
+        {
+            this.ClearBoard();
+        }
+
 
         // creates and returns a reference to the grid of buttons used for the board
         public Grid InitializeBoard(int size)
@@ -180,14 +186,11 @@ namespace SOSGame
             SOSInfo sosInfo = this.gameLogicHandler.GetSOSInfo(move);
             HandleSOS(sosInfo);
 
-            // if the board is full, handle whether to call a draw or to tally points
-            if (gameLogicHandler.IsBoardFull()) { HandleFullBoard(); }
-
             // update the GUI turn label
             this.GUIRef.UpdateTurnLabel(this.gameLogicHandler.IsRedTurn());
 
             // if the next player up is a computer, have it move
-            if (IsComputerTurnNext()) { HandleComputerMove(); }
+            if (IsComputerTurnNext(sosInfo)) { HandleComputerMove(); }
 
             Console.WriteLine(String.Format("Clicked Button At r = {0}, c = {1}", pressedButton.GetRowIndex(), pressedButton.GetColumnIndex()));
             Console.WriteLine(this.GetCell(pressedButton.GetRowIndex() , pressedButton.GetColumnIndex()));
@@ -208,14 +211,11 @@ namespace SOSGame
             SOSInfo sosInfo = this.gameLogicHandler.GetSOSInfo(computerMove);
             HandleSOS(sosInfo);
 
-            // if the board is full, handle whether to call a draw or to tally points
-            if (gameLogicHandler.IsBoardFull()) { HandleFullBoard(); }
-
             // update the GUI turn label
             this.GUIRef.UpdateTurnLabel(this.gameLogicHandler.IsRedTurn());
 
             // if the next player up is a computer, have it move (this should only happen during fully computer games)
-            if (IsComputerTurnNext()) { HandleComputerMove(); }
+            if (IsComputerTurnNext(sosInfo)) { HandleComputerMove(); }
         }
 
 
@@ -235,7 +235,15 @@ namespace SOSGame
                     gridButton.Enabled = false;
                 }
             }
+
+            // display a message of who won
+            String winMessage = isRedWon ? "Red Won!" : "Blue Won!";
+            GUIRef.DisplayMessage(winMessage);
         }
+
+
+        // method for draw games
+        public void Draw()  { GUIRef.DisplayMessage("Tie Game!"); }
 
 
         // method for handling moves made by computers, humans, or recordings thereof
@@ -259,18 +267,30 @@ namespace SOSGame
 
 
         // method for determining if the next turn is to be made by a computer
-        public bool IsComputerTurnNext()
+        public bool IsComputerTurnNext(SOSInfo sosInfo)
         {
+            // holds the current turn in form "Red" or "Blue"
             String playerTurn = gameLogicHandler.GetPlayerTurnColorName();
 
-            if (playerTurn == "Red" && this.isBlueComputer) { return true; }
-            else if (playerTurn == "Blue" && this.isRedComputer) { return true; }
-            else { return false; }
+            // if the current turn's player did not make an SOS, determine
+            // if the other player is a computer as they will be up next
+            if (sosInfo.NumSOS == 0)
+            {
+                if (playerTurn == "Red" && this.isBlueComputer) { return true; }
+                else if (playerTurn == "Blue" && this.isRedComputer) { return true; }
+                else { return false; }
+            }
+
+            // otherwise determine if the player who made the move is a
+            // computer because they will get another turn
+            else
+            {
+                if (playerTurn == "Red" && this.isRedComputer) { return true; }
+                else if (playerTurn == "Blue" && this.isBlueComputer) { return true; }
+                else { return false; }
+            }
         }
-
-
         
-
 
 
         // getters (for testing)
