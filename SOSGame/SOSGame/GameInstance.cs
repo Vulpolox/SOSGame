@@ -228,7 +228,11 @@ namespace SOSGame
                     HandleComputerMove();
                 }
 
-                catch (Exception ex)  { Console.WriteLine($"Error: {ex.Message}"); }
+                catch (Exception ex)  
+                { 
+                    Console.WriteLine($"Error: {ex.Message}");
+                    Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+                }
                 
             };
 

@@ -262,10 +262,13 @@ namespace SOSGame
 
             int odds = rand.Next(1, 11);
 
-            foreach (var sosMove in sosMoves)
+            if (sosMoves.Count != 0)
             {
-                if (odds > 5) { return sosMove; }
-                else { odds++; }
+                foreach (var sosMove in sosMoves)
+                {
+                    if (odds > 5) { return sosMove; }
+                    else { odds++; }
+                }
             }
 
 
@@ -275,7 +278,7 @@ namespace SOSGame
             // if CPU player doesn't take any moves that could make an SOS,
             // select a random move from this list and return it
 
-            if (smartMoves.Count > 0) { return smartMoves[rand.Next(0, possibleMoves.Count)]; }
+            if (smartMoves.Count > 0) { return smartMoves[rand.Next(0, smartMoves.Count)]; }
 
 
             // FOR LIST OF ALL POSSIBLE MOVES
