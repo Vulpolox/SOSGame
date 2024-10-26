@@ -89,7 +89,7 @@ namespace SOSGame
             _guiHandler.Draw();
 
 
-            //draw lines to mark SOSs
+            // draw lines to mark SOSs
             _spriteBatch.Begin();
 
             foreach (var line in this._lines)
@@ -98,7 +98,17 @@ namespace SOSGame
             }
 
             // draw test pixel
-            DrawTestPixel(_spriteBatch, _lineTexture, 390, 200);
+            //DrawTestPixel(_spriteBatch, _lineTexture, 390, 200);
+
+            _spriteBatch.End();
+
+
+            // draw message boxes in a different
+            // sprite batch so they aren't covered by drawn lines
+
+            _spriteBatch.Begin();
+
+            _guiHandler.DrawMessageBoxes();
 
             _spriteBatch.End();
                       
@@ -122,7 +132,7 @@ namespace SOSGame
                      line.LineColor,                // Use the line's color
                      rotation,                      // Rotate to match the line's angle
                      Vector2.Zero,                  // Origin at top-left of the texture
-                     new Vector2(length, 1f),       // Scale width to length, height to 1 (thin line)
+                     new Vector2(length, 3f),       // Scale width to length, height to 1 (thin line)
                      SpriteEffects.None,
                      0f);                           // Layer depth
         }

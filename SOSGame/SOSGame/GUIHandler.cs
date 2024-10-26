@@ -15,8 +15,9 @@ namespace SOSGame
 {
     public class GUIHandler
     {
-        private Desktop _desktop;   // Myra Desktop object for drawing UI elements to the screen
-        private Grid outerGrid;     // Outer grid for holding the main UI elements of the SOS game
+        private Desktop _desktop;           // Myra Desktop object for drawing UI elements to the screen
+        private Desktop _messageboxDesktop; // Myra Desktop for drawing message boxes on the screen
+        private Grid outerGrid;             // Outer grid for holding the main UI elements of the SOS game
 
 
         // FontStashSharp Font System
@@ -572,7 +573,12 @@ namespace SOSGame
 
             _desktop = new Desktop
             {
-                Root = outerGrid
+                Root = this.outerGrid
+            };
+
+            _messageboxDesktop = new Desktop
+            {
+                Root = this.gameTypeButtonPane
             };
 
             Console.WriteLine("Finished Initializing GUI"); // to disable console go to Project -> SOSGame Properties -> Change Output type
@@ -653,12 +659,18 @@ namespace SOSGame
             _desktop.Render();
         }
 
+        // method for drawing message boxes to screen
+        public void DrawMessageBoxes()
+        {
+            _messageboxDesktop.Render();
+        }
+
 
         // method for displaying message boxes
         public void DisplayMessage(String message)
         {
             var messageBox = Dialog.CreateMessageBox("SOS Message", message);
-            messageBox.ShowModal(_desktop);
+            messageBox.ShowModal(_messageboxDesktop);
         }
 
         // method for resetting the ScoreLabel
