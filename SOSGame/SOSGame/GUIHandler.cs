@@ -578,7 +578,7 @@ namespace SOSGame
 
             _messageboxDesktop = new Desktop
             {
-                Root = this.gameTypeButtonPane
+
             };
 
             Console.WriteLine("Finished Initializing GUI"); // to disable console go to Project -> SOSGame Properties -> Change Output type
