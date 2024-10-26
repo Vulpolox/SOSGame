@@ -11,19 +11,24 @@ namespace SOSGame
     public class Line
     {
         // instance variables
-        public Vector2 StartPoint { get; set; }
-        public Vector2 Direction { get; set; }
-        public Vector2 Length { get; set; }
+        public Vector2 StartCoords { get; set; }
+        public Vector2 EndCoords { get; set; }
         public Color LineColor { get; set; }
 
 
         // constructor
-        public Line(Vector2 startPoint, Vector2 direction, Vector2 length, Color lineColor)
+        public Line(Vector2 startCoords, Vector2 endCoords, Color lineColor)
         {
-            this.StartPoint = startPoint;
-            this.Direction = direction;
-            this.Length = length;
+            this.StartCoords = startCoords;
+            this.EndCoords = endCoords;
             this.LineColor = lineColor;
+        }
+
+
+        // ToString override for testing
+        public override string ToString()
+        {
+            return $"Start Point: {this.StartCoords}\nEnd Point: {this.EndCoords}";
         }
 
     }

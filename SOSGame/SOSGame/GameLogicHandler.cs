@@ -158,7 +158,7 @@ namespace SOSGame
                         internalBoardStateRef(moveCoords + (2 * direction)) == "S")
                     {
                         // each time these conditions are met, add an SOS to the SOSInfo object
-                        sosInfo.AddSOS(startingPos: moveCoords, direction: direction);
+                        sosInfo.AddSOS(startingPos: moveCoords, endingPos: moveCoords + (2 * direction));
                     }
                 }
             }
@@ -173,7 +173,7 @@ namespace SOSGame
                    internalBoardStateRef(moveCoords + DirectionVectors.Down) == "S")
                 {
                     sosInfo.AddSOS(startingPos: (moveCoords + DirectionVectors.Down),
-                                   direction: DirectionVectors.Up);
+                                   endingPos: (moveCoords + DirectionVectors.Up));
 
                 }
 
@@ -182,7 +182,7 @@ namespace SOSGame
                    internalBoardStateRef(moveCoords + DirectionVectors.Right) == "S")
                 {
                     sosInfo.AddSOS(startingPos: (moveCoords + DirectionVectors.Left),
-                                   direction: DirectionVectors.Right);
+                                   endingPos: (moveCoords + DirectionVectors.Right));
 
                 }
 
@@ -191,7 +191,7 @@ namespace SOSGame
                    internalBoardStateRef(moveCoords + DirectionVectors.DownRight) == "S")
                 {
                     sosInfo.AddSOS(startingPos: (moveCoords + DirectionVectors.DownRight),
-                                   direction: DirectionVectors.UpLeft);
+                                   endingPos: (moveCoords + DirectionVectors.UpLeft));
 
                 }
 
@@ -200,7 +200,7 @@ namespace SOSGame
                    internalBoardStateRef(moveCoords + DirectionVectors.DownLeft) == "S")
                 {
                     sosInfo.AddSOS(startingPos: (moveCoords + DirectionVectors.DownLeft),
-                                   direction: DirectionVectors.UpRight);
+                                   endingPos: (moveCoords + DirectionVectors.UpRight));
 
                 }
 

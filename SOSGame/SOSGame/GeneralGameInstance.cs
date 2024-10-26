@@ -39,6 +39,9 @@ namespace SOSGame
             // otherwise, add the score to the player who made the move and let them go again
             else
             {
+                // handle drawing lines
+                HandleLines(sosInfo);
+
                 if (gameLogicHandler.GetPlayerTurnColorName() == "Blue") { this.blueScore += moveScore; }
                 else if (gameLogicHandler.GetPlayerTurnColorName() == "Red") { this.redScore += moveScore; }
                 else { Console.WriteLine("Error in General Game HandleSOS()"); }

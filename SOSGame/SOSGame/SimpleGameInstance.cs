@@ -33,6 +33,9 @@ namespace SOSGame
             // if the player makes an SOS, declare them the winner
             else if (sosInfo.NumSOS > 0)
             {
+                // handle drawing lines
+                HandleLines(sosInfo);
+
                 // initialize a boolean for whether red or blue won and pass it to the Win() function
                 bool isRedWon = this.isRedTurn;
                 this.Win(isRedWon);

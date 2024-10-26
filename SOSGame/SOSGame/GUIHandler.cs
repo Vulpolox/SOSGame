@@ -146,7 +146,8 @@ namespace SOSGame
             gameTypeButtonPane = new Grid
             {
                 RowSpacing = 8,
-                ColumnSpacing = 15
+                ColumnSpacing = 15,
+                Height = 50
             };
 
             // Add two columns to the pane for the radio buttons
@@ -586,7 +587,7 @@ namespace SOSGame
             {
                 this.ResetScoreLabel();
                 gameInstance.ClearBoard();
-                // TODO: erase drawn lines
+                (MyraEnvironment.Game as Game1)?.ClearLines();
             }
 
             this.gameLogicHandler = new GameLogicHandler(this);                 // create new GameLogicHandler with updated flags from the GUI

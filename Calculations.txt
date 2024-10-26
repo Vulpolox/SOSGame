@@ -1,0 +1,10 @@
+Stupid calculations I have to do because my GUI framework doesn't provide
+methods for getting absolute position
+
+* Board: 300 x 300 px
+* Button Side Len (sl): (300 / size)
+* Top Left Coordinates of Board (bp) = (390, 200)
+* Button Absolute Position (top left): ( [bp.x + {sl * columnIndex} ], [bp.y + {sl * rowIndex} ] )
+
+fn AbsolutePositionCenter(absolutePosition)
+	return new Vector2(absolutePosition.x + 0.5sl, absolutePosition.y + 0.5sl)

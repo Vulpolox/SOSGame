@@ -12,8 +12,8 @@ namespace SOSGame
     public class SOSInfo
     {
         // instance variables
-        public List<List<Vector2>> CoordsAndDirections { get; set; } // directions and starting positions of
-                                                                     // all SOSs for drawing lines
+        public List<List<Vector2>> StartEndCoords { get; set; }      // starting + ending indices of
+                                                                     // cells through which to draw line
         public int NumSOS { get; set; }                              // number of SOSs
 
 
@@ -21,25 +21,25 @@ namespace SOSGame
         public SOSInfo() 
         {
             this.NumSOS = 0;
-            this.CoordsAndDirections = new List<List<Vector2>>();
+            this.StartEndCoords = new List<List<Vector2>>();
         }
 
 
         // methods
 
         // method for adding an SOS
-        public void AddSOS(Vector2 startingPos, Vector2 direction)
+        public void AddSOS(Vector2 startingPos, Vector2 endingPos)
         {
 
             // increment the number of SOSs
             this.NumSOS++;
 
-            // define and return the startingPos-direction pair to draw the line
+            // define and add the endpoint pair to draw the line
             List<Vector2> coordDirectionPair = new List<Vector2>();
             coordDirectionPair.Add(startingPos);
-            coordDirectionPair.Add(direction);
+            coordDirectionPair.Add(endingPos);
 
-            this.CoordsAndDirections.Add(coordDirectionPair);
+            this.StartEndCoords.Add(coordDirectionPair);
 
 
         }
