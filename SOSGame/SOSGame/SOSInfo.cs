@@ -16,12 +16,16 @@ namespace SOSGame
                                                                      // cells through which to draw line
         public int NumSOS { get; set; }                              // number of SOSs
 
+        public bool IsRedTurn { get; }
+
 
         // constructor
-        public SOSInfo() 
+        public SOSInfo(bool isRedTurn) 
         {
             this.NumSOS = 0;
             this.StartEndCoords = new List<List<Vector2>>();
+
+            this.IsRedTurn = isRedTurn;
         }
 
 

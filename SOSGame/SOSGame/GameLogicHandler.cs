@@ -145,7 +145,7 @@ namespace SOSGame
         public SOSInfo GetSOSInfo(MoveInfo move)
         {
             // initialize an SOS counter to 0 and create a Vector2 with move indices
-            SOSInfo sosInfo = new SOSInfo();
+            SOSInfo sosInfo = new SOSInfo(this.isRedTurn);
             Vector2 moveCoords = new Vector2(move.RowIndex, move.ColumnIndex);
 
             // if move letter is an 'S'
@@ -217,7 +217,143 @@ namespace SOSGame
 
         public MoveInfo GenerateComputerMove()
         {
-            throw new NotImplementedException();
+
+            // initialize variables
+            List<MoveInfo> possibleMoves = new List<MoveInfo>();
+            List<MoveInfo> sosMoves = new List<MoveInfo>();
+            List<MoveInfo> smartMoves = new List<MoveInfo>();
+            Random rand = new Random();
+
+            // DEFINE LISTS
+
+            // create a list of all possible moves that result in SOS creation
+
+            for (int r = 0; r < this.boardSize; r++)
+            {
+                for (int c = 0; c < this.boardSize; c++)
+                {
+                    if (this.internalBoardState[r][c] == "EMPTY")
+                    {
+                        MoveInfo sMove = new MoveInfo(r, c, "S");
+                        MoveInfo oMove = new MoveInfo(r, c, "O");
+                        possibleMoves.Add(sMove);
+                        possibleMoves.Add(oMove);
+                    }
+                }
+            }
+
+
+            // create a list of all possible moves that result in SOS creation
+
+            sosMoves = possibleMoves.Where(move => SOSMovePredicate(move)).ToList();
+
+            // create a list of all possible moves which will not lead
+            // to an SOS being possible for the next player
+
+            smartMoves = possibleMoves.Where(move => SmartMovePredicate(move)).ToList();
+
+
+            // FOR LIST OF POSSIBLE SOS MOVES
+
+            // generate a random number 1-10; foreach element in
+            // possible SOS moves, if number is > 5, return that move;
+            // if it is not, increment the generated number by 1
+            // (more possible SOSs = higher likelihood CPU takes one)
+
+            int odds = rand.Next(1, 11);
+
+            foreach (var sosMove in sosMoves)
+            {
+                if (odds > 5) { return sosMove; }
+                else { odds++; }
+            }
+
+
+            // FOR LIST OF MOVES THAT WILL NOT ALLOW NEXT PLAYER TO
+            // GET SOS
+
+            // if CPU player doesn't take any moves that could make an SOS,
+            // select a random move from this list and return it
+
+            if (smartMoves.Count > 0) { return smartMoves[rand.Next(0, possibleMoves.Count)]; }
+
+
+            // FOR LIST OF ALL POSSIBLE MOVES
+
+            // if the previous list is empty, take a random move from
+            // all possible moves list
+
+            else { return possibleMoves[rand.Next(0, possibleMoves.Count)]; }
+
+
+            // PREDICATE HELPER FUNCTIONS
+
+            bool SOSMovePredicate(MoveInfo move)
+            {
+                return this.GetSOSInfo(move).NumSOS > 0;
+            }
+
+
+            bool SmartMovePredicate(MoveInfo move)
+            {
+                Vector2 moveCoords = new Vector2(move.RowIndex, move.ColumnIndex);
+
+                // if move letter is an 'S'
+                if (move.MoveLetter == "S")
+                {
+                    // check 2 cells in each of the 8 directions for an 'O' and an 'EMPTY' in that order
+                    // or an 'EMPTY' and an 'S' in that order
+                    foreach (Vector2 direction in DirectionVectors.GetAllDirections())
+                    {
+                        if (internalBoardStateRef(moveCoords + direction) == "O" &&
+                            internalBoardStateRef(moveCoords + (2 * direction)) == "EMPTY"
+                            ||
+                            internalBoardStateRef(moveCoords + direction) == "EMPTY" &&
+                            internalBoardStateRef(moveCoords + (2 * direction)) == "S")
+                        {
+                            // move is not smart, return false
+                            return false;
+                        }
+                    }
+                }
+
+                // if the move letter is an 'O'
+                else if (move.MoveLetter == "O")
+                {
+                    // check the 4 pairs of opposite directions for one 'S' and one 'EMPTY'
+
+                    if (internalBoardStateRef(moveCoords + DirectionVectors.Up) == "S" &&
+                       internalBoardStateRef(moveCoords + DirectionVectors.Down) == "EMPTY"
+                       ||
+                       internalBoardStateRef(moveCoords + DirectionVectors.Up) == "EMPTY" &&
+                       internalBoardStateRef(moveCoords + DirectionVectors.Down) == "S"
+                       ||
+                       internalBoardStateRef(moveCoords + DirectionVectors.Left) == "S" &&
+                       internalBoardStateRef(moveCoords + DirectionVectors.Right) == "EMPTY"
+                       ||
+                       internalBoardStateRef(moveCoords + DirectionVectors.Left) == "EMPTY" &&
+                       internalBoardStateRef(moveCoords + DirectionVectors.Right) == "S"
+                       ||
+                       internalBoardStateRef(moveCoords + DirectionVectors.UpLeft) == "S" &&
+                       internalBoardStateRef(moveCoords + DirectionVectors.DownRight) == "EMPTY"
+                       ||
+                       internalBoardStateRef(moveCoords + DirectionVectors.UpLeft) == "EMPTY" &&
+                       internalBoardStateRef(moveCoords + DirectionVectors.DownRight) == "S"
+                       ||
+                       internalBoardStateRef(moveCoords + DirectionVectors.UpRight) == "S" &&
+                       internalBoardStateRef(moveCoords + DirectionVectors.DownLeft) == "EMPTY"
+                       ||
+                       internalBoardStateRef(moveCoords + DirectionVectors.UpRight) == "EMPTY" &&
+                       internalBoardStateRef(moveCoords + DirectionVectors.DownLeft) == "S")
+                    {
+                        // move is not smart, return false
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
         }
     }
 }

@@ -37,7 +37,7 @@ namespace SOSGame
                 HandleLines(sosInfo);
 
                 // initialize a boolean for whether red or blue won and pass it to the Win() function
-                bool isRedWon = this.isRedTurn;
+                bool isRedWon = sosInfo.IsRedTurn;
                 this.Win(isRedWon);
             }
 
