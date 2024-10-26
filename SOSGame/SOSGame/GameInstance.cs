@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Timers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,6 +28,12 @@ namespace SOSGame
         protected bool isSimpleGame;    // flag for whether game mode is set to simple
         protected bool isRedComputer;   // flag for whether player is computer
         protected bool isBlueComputer;  // flag for whether player is computer
+
+        // flag for if game is over
+        protected bool isGameOver = false;
+
+        // recorded size
+        protected int recordedSize;
 
         // player information
         protected bool isRedTurn = false;     // flag for red player's turn
@@ -70,15 +77,18 @@ namespace SOSGame
             // update the current turn label
             GUIRef.UpdateTurnLabel(isRedTurn: this.isRedTurn);
 
+            // set the recorded game's board size if applicable
+            this.recordedSize = recordedSize;
+
             // initialize the board and place it in the outerGrid
-            int finalSize = recordedSize != -1 ? recordedSize : this.size;
+            int finalSize = this.recordedSize != -1 ? this.recordedSize : this.size;
             this.buttonGrid = InitializeBoard(finalSize);
             Grid.SetRow(buttonGrid, _r);
             Grid.SetColumn(buttonGrid, _c);
             this.outerGrid.Widgets.Add(buttonGrid);
 
             // if the player who is up first is a computer and it is not a game recording, generate and handle its move
-            if (this.isBlueComputer && recordedSize != -1)  { HandleComputerMove(); }
+            if (this.isBlueComputer && this.recordedSize == -1)  { StartComputerMove(250); }
 
         }
 
@@ -178,29 +188,57 @@ namespace SOSGame
 
             // create and process a move
             MoveInfo move = new MoveInfo(rowIndex, columnIndex, playerSOChoice);
-            move.TurnBit = this.gameLogicHandler.IsBlueTurn() ? 0 : 1;
             HandleMove(move);
 
             // get SOS information and handle it
             SOSInfo sosInfo = this.gameLogicHandler.GetSOSInfo(move);
+            bool isComputerNext = this.IsComputerTurnNext(sosInfo);
             HandleSOS(sosInfo);
 
             // update the GUI turn label
             this.GUIRef.UpdateTurnLabel(this.gameLogicHandler.IsRedTurn());
 
             // if the next player up is a computer, have it move
-            if (IsComputerTurnNext(sosInfo)) { HandleComputerMove(); }
+            if (isComputerNext && !isGameOver) { StartComputerMove(500); }
 
-            Console.WriteLine(String.Format("Clicked Button At r = {0}, c = {1}", pressedButton.GetRowIndex(), pressedButton.GetColumnIndex()));
-            Console.WriteLine(this.GetCell(pressedButton.GetRowIndex() , pressedButton.GetColumnIndex()));
+            //Console.WriteLine(String.Format("Clicked Button At r = {0}, c = {1}", pressedButton.GetRowIndex(), pressedButton.GetColumnIndex()));
+            //Console.WriteLine(this.GetCell(pressedButton.GetRowIndex() , pressedButton.GetColumnIndex()));
 
+        }
+
+
+        // method for creating a delay before invoking
+        // a computer move
+        public void StartComputerMove(int delay)
+        {
+            Timer timer = new Timer(delay);
+
+            // disable unpressed buttons while the computer is moving
+            this.ToggleUnpressedButtons(false);
+
+            timer.Elapsed += (sender, e) =>
+            {
+                try
+                {
+                    // clean up after timer elapsed
+                    timer.Stop();
+                    timer.Dispose();
+
+                    // invoke the computer move
+                    HandleComputerMove();
+                }
+
+                catch (Exception ex)  { Console.WriteLine($"Error: {ex.Message}"); }
+                
+            };
+
+            timer.Start();
         }
 
 
         // method for generating/handling computer-made moves
         public void HandleComputerMove()
         {
-            // TODO: add a slight delay using coroutines so computer moves don't happen instantly
 
             // generate and handle move made by computer
             MoveInfo computerMove = this.gameLogicHandler.GenerateComputerMove();
@@ -208,13 +246,17 @@ namespace SOSGame
 
             // get SOS information and handle it
             SOSInfo sosInfo = this.gameLogicHandler.GetSOSInfo(computerMove);
+            bool isComputerNext = this.IsComputerTurnNext(sosInfo);
             HandleSOS(sosInfo);
 
             // update the GUI turn label
             this.GUIRef.UpdateTurnLabel(this.gameLogicHandler.IsRedTurn());
 
             // if the next player up is a computer, have it move (this should only happen during fully computer games)
-            if (IsComputerTurnNext(sosInfo)) { HandleComputerMove(); }
+            if (isComputerNext && !isGameOver) { StartComputerMove(500); }
+
+            // otherwise reenable the buttons for the human player
+            else { this.ToggleUnpressedButtons(true); }
         }
 
 
@@ -238,11 +280,21 @@ namespace SOSGame
             // display a message of who won
             String winMessage = isRedWon ? "Red Won!" : "Blue Won!";
             GUIRef.DisplayMessage(winMessage);
+
+            // update isGameOver flag
+            this.isGameOver = true;
         }
 
 
         // method for draw games
-        public void Draw()  { GUIRef.DisplayMessage("Tie Game!"); }
+        public void Draw()  
+        { 
+            // display message box
+            GUIRef.DisplayMessage("Tie Game!");
+
+            // update isGameOver flag
+            this.isGameOver = true;
+        }
 
 
         // method for handling moves made by computers, humans, or recordings thereof
@@ -263,8 +315,7 @@ namespace SOSGame
             // update the internal board state
             this.gameLogicHandler.UpdateInternalBoardState(rowIndex, columnIndex, moveLetter);
         }
-
-
+        
         // method for determining if the next turn is to be made by a computer
         public bool IsComputerTurnNext(SOSInfo sosInfo)
         {
@@ -288,6 +339,7 @@ namespace SOSGame
                 else if (playerTurn == "Blue" && this.isBlueComputer) { return true; }
                 else { return false; }
             }
+            
         }
 
 
@@ -388,5 +440,20 @@ namespace SOSGame
         }
 
 
+        // method for disable/enabling all unpressed buttons
+        // for use when computer is moving
+        public void ToggleUnpressedButtons(bool enableDisable)
+        {
+            foreach (var buttonRow in this.buttonArray)
+            {
+                foreach (GridButton button in buttonRow)
+                {
+                    if (button.GetText() == " ")
+                    {
+                        button.Enabled = enableDisable;
+                    }
+                }
+            }
+        }
     }
 }

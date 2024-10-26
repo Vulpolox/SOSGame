@@ -174,7 +174,6 @@ namespace SOSGame
                 {
                     sosInfo.AddSOS(startingPos: (moveCoords + DirectionVectors.Down),
                                    endingPos: (moveCoords + DirectionVectors.Up));
-
                 }
 
                 // LEFT and RIGHT
@@ -183,7 +182,6 @@ namespace SOSGame
                 {
                     sosInfo.AddSOS(startingPos: (moveCoords + DirectionVectors.Left),
                                    endingPos: (moveCoords + DirectionVectors.Right));
-
                 }
 
                 // UP LEFT and DOWN RIGHT
@@ -192,7 +190,6 @@ namespace SOSGame
                 {
                     sosInfo.AddSOS(startingPos: (moveCoords + DirectionVectors.DownRight),
                                    endingPos: (moveCoords + DirectionVectors.UpLeft));
-
                 }
 
                 // UP RIGHT and DOWN LEFT
@@ -201,7 +198,6 @@ namespace SOSGame
                 {
                     sosInfo.AddSOS(startingPos: (moveCoords + DirectionVectors.DownLeft),
                                    endingPos: (moveCoords + DirectionVectors.UpRight));
-
                 }
 
 
@@ -222,12 +218,6 @@ namespace SOSGame
         public MoveInfo GenerateComputerMove()
         {
             throw new NotImplementedException();
-        }
-
-
-        private void DrawLine(Vector2 startPos, Vector2 direction, Color color)
-        {
-            // TODO
         }
     }
 }
