@@ -244,6 +244,8 @@ namespace SOSGame
         public void HandleComputerMove()
         {
 
+            Console.WriteLine("Computer Moved");
+
             // generate and handle move made by computer
             MoveInfo computerMove = this.gameLogicHandler.GenerateComputerMove();
             HandleMove(computerMove);
@@ -448,6 +450,11 @@ namespace SOSGame
         // for use when computer is moving
         public void ToggleUnpressedButtons(bool enableDisable)
         {
+            // disable/enable New Game and Replay Recording buttons to prevent shenanigans
+            // when CPU players are moving
+            GUIRef.GetNewGameButton().Enabled = enableDisable;
+            GUIRef.GetReplayButton().Enabled = enableDisable;
+
             foreach (var buttonRow in this.buttonArray)
             {
                 foreach (GridButton button in buttonRow)

@@ -209,8 +209,6 @@ namespace SOSGame
                 Console.WriteLine($"Invalid Move Letter {move.MoveLetter}");
             }
 
-            Console.WriteLine($"Found {sosInfo.NumSOS} SOSs");
-
             return sosInfo;
         }
 

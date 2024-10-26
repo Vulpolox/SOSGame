@@ -148,7 +148,6 @@ namespace SOSGame
         public void AddLine(Line line) 
         { 
             _lines.Add(line);
-            Console.WriteLine(line);
         }
 
 
