@@ -141,6 +141,7 @@ namespace SOSGame
             Console.WriteLine(line);
         }
 
+
         // method for cleaning up lines from previous game
         public void ClearLines()
         {
