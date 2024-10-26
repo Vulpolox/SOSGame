@@ -19,7 +19,7 @@ namespace SOSGame
         private int redScore;
 
         // constructor
-        public GeneralGameInstance(GUIHandler GUIRef, GameLogicHandler gameLogicHandler) : base(GUIRef, gameLogicHandler)
+        public GeneralGameInstance(GUIHandler GUIRef, GameLogicHandler gameLogicHandler, int recordingSize = -1) : base(GUIRef, gameLogicHandler, recordingSize)
         {
             this.blueScore = 0; 
             this.redScore = 0;

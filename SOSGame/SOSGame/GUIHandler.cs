@@ -76,6 +76,9 @@ namespace SOSGame
         private GameInstance gameInstance;
         private GameLogicHandler gameLogicHandler;
 
+        // recording information
+        public RecordingInfo recordingInfo { get; private set; }
+
 
         // Constructor
         public GUIHandler(Game game)
@@ -583,33 +586,75 @@ namespace SOSGame
 
             Console.WriteLine("Finished Initializing GUI"); // to disable console go to Project -> SOSGame Properties -> Change Output type
 
+        // initialize recording information
+
+            this.recordingInfo = new RecordingInfo(this.GetBoardSize(), this.IsSimpleGame());
+
         }
 
         // action listeners for buttons
         public void OnNewGameClick(object sender, EventArgs e)
         {
             // clean up the previous instance
+            this.CleanPreviousInstance();
+
+            this.gameLogicHandler = new GameLogicHandler(this);                 // create new GameLogicHandler with updated flags from the GUI
+
+            // initialize game based on specified settings
+            if (!IsRecordedGame()) 
+            {      this.gameInstance = IsSimpleGame() ? 
+                                       new SimpleGameInstance(this, this.gameLogicHandler) : 
+                                       new GeneralGameInstance(this, this.gameLogicHandler);}
+            else { this.gameInstance = IsSimpleGame() ? 
+                                                         new SimpleRecordedGameInstance(this, this.gameLogicHandler) : 
+                                                         new GeneralRecordedGameInstance(this, this.gameLogicHandler);
+            
+                // reset recording data so a new game can be recorded
+                this.recordingInfo = new RecordingInfo(this.GetBoardSize(), this.IsSimpleGame());
+            }
+        }
+
+        public void OnReplayClick(object sender, EventArgs e)
+        {
+            if (this.recordingInfo.IsEmpty)
+            {
+                DisplayMessage("No Recording Data");
+            }
+
+            else
+            {
+                this.CleanPreviousInstance();
+
+                this.gameLogicHandler = new GameLogicHandler(this);
+
+                Console.WriteLine("here");
+                Console.WriteLine($"{this.recordingInfo.IsSimpleGame}");
+
+                try
+                {
+                    this.gameInstance = this.recordingInfo.IsSimpleGame ?
+                                      new SimpleGameRecording(this, this.gameLogicHandler, this.recordingInfo.RecordedBoardSize) :
+                                      new GeneralGameRecording(this, this.gameLogicHandler, this.recordingInfo.RecordedBoardSize);
+                }
+
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"{ex.Message}");
+                    Console.WriteLine(ex.StackTrace);
+                }
+
+            }
+        }
+
+        // cleanup method
+        public void CleanPreviousInstance()
+        {
             if (this.gameInstance != null)
             {
                 this.ResetScoreLabel();
                 gameInstance.ClearBoard();
                 (MyraEnvironment.Game as Game1)?.ClearLines();
             }
-
-            this.gameLogicHandler = new GameLogicHandler(this);                 // create new GameLogicHandler with updated flags from the GUI
-
-            // initialize game based on specified settings
-            if (!IsRecordedGame()) { this.gameInstance = IsSimpleGame() ? 
-                                                         new SimpleGameInstance(this, this.gameLogicHandler) : 
-                                                         new GeneralGameInstance(this, this.gameLogicHandler); }
-            else { this.gameInstance = IsSimpleGame() ? 
-                                                         new SimpleRecordedGameInstance(this, this.gameLogicHandler) : 
-                                                         new GeneralRecordedGameInstance(this, this.gameLogicHandler); }
-        }
-
-        public void OnReplayClick(object sender, EventArgs e)
-        {
-            Console.WriteLine("TODO");
         }
 
         // GUI state getters

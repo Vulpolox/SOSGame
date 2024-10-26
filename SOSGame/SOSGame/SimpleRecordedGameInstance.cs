@@ -17,5 +17,13 @@ namespace SOSGame
         {
 
         }
+
+        public override void HandleMove(MoveInfo moveInfo)
+        {
+            base.HandleMove(moveInfo);
+
+            // record the move
+            GUIRef.recordingInfo.RecordMove(moveInfo);
+        }
     }
 }

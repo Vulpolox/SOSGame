@@ -244,8 +244,6 @@ namespace SOSGame
         public void HandleComputerMove()
         {
 
-            Console.WriteLine("Computer Moved");
-
             // generate and handle move made by computer
             MoveInfo computerMove = this.gameLogicHandler.GenerateComputerMove();
             HandleMove(computerMove);
@@ -304,7 +302,7 @@ namespace SOSGame
 
 
         // method for handling moves made by computers, humans, or recordings thereof
-        public void HandleMove(MoveInfo moveInfo)
+        public virtual void HandleMove(MoveInfo moveInfo)
         {
             // unpack variables
             int columnIndex = moveInfo.ColumnIndex;

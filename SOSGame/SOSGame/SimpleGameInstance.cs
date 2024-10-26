@@ -13,7 +13,7 @@ namespace SOSGame
 {
     public class SimpleGameInstance : GameInstance
     {
-        public SimpleGameInstance(GUIHandler GUIRef, GameLogicHandler gameLogicHandler) : base(GUIRef, gameLogicHandler)
+        public SimpleGameInstance(GUIHandler GUIRef, GameLogicHandler gameLogicHandler, int recordingSize = -1) : base(GUIRef, gameLogicHandler, recordingSize)
         {
 
         }
