@@ -627,9 +627,6 @@ namespace SOSGame
 
                 this.gameLogicHandler = new GameLogicHandler(this);
 
-                Console.WriteLine("here");
-                Console.WriteLine($"{this.recordingInfo.IsSimpleGame}");
-
                 try
                 {
                     this.gameInstance = this.recordingInfo.IsSimpleGame ?

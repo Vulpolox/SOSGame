@@ -22,6 +22,11 @@ namespace SOSGame
 
             // play back the recorded moves if there are any
             if (moves.RecordedMoves.Count > 0) { HandleRecordedMoves(); }
+            else
+            {
+                GUIRef.GetNewGameButton().Enabled = true;
+                GUIRef.GetReplayButton().Enabled = true;
+            }
 
         }
 
