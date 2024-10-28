@@ -10,8 +10,6 @@ using Myra.Graphics2D.UI;
 
 using Moq;
 
-// random change
-
 namespace SOSTests
 {
     [TestClass]
@@ -173,6 +171,135 @@ namespace SOSTests
 
             Assert.AreEqual(testValue1, expectedValue1);
             Assert.AreEqual(testValue2, expectedValue2);
+        }
+
+
+        // Acceptance Criteria
+        // Made by ChatGPT
+        [TestMethod]
+        public void TestSOSCreationWithO()
+        {
+            // ARRANGE: Create a 3x3 GameLogicHandler instance
+            var gameLogic = new GameLogicHandler(boardSize: 3);
+
+            // Setup an SOS configuration with 'S-O-S' horizontally
+            gameLogic.UpdateInternalBoardState(1, 0, "S");  // Place 'S' at (1, 0)
+            gameLogic.UpdateInternalBoardState(1, 1, "O");  // Place 'O' at (1, 1)
+            gameLogic.UpdateInternalBoardState(1, 2, "S");  // Place 'S' at (1, 2)
+
+            // ACT: Check for SOS in this configuration
+            var moveInfo = new MoveInfo(1, 1, "O");  // Centered on the 'O'
+            var sosInfo = gameLogic.GetSOSInfo(moveInfo);
+
+            // ASSERT: Confirm SOS was detected
+            Assert.AreEqual(1, sosInfo.NumSOS, "Expected 1 SOS pattern with central 'O'");
+        }
+
+
+        // Acceptance Criteria
+        // Made by ChatGPT
+        [TestMethod]
+        public void TestSOSCreationWithS()
+        {
+            // ARRANGE: Create a 3x3 GameLogicHandler instance
+            var gameLogic = new GameLogicHandler(boardSize: 3);
+
+            // Setup an SOS configuration with 'S-O-S' vertically
+            gameLogic.UpdateInternalBoardState(0, 1, "S");  // Place 'S' at (0, 1)
+            gameLogic.UpdateInternalBoardState(1, 1, "O");  // Place 'O' at (1, 1)
+            gameLogic.UpdateInternalBoardState(2, 1, "S");  // Place 'S' at (2, 1)
+
+            // ACT: Check for SOS in this configuration
+            var moveInfo = new MoveInfo(0, 1, "S");  // Starting point 'S'
+            var sosInfo = gameLogic.GetSOSInfo(moveInfo);
+
+            // ASSERT: Confirm SOS was detected
+            Assert.AreEqual(1, sosInfo.NumSOS, "Expected 1 SOS pattern with starting 'S'");
+        }
+
+
+        // Acceptance Criteria
+        [TestMethod]
+        public void TestGetLineEndpointsIndices()
+        {
+
+            // ARRANGE
+
+            GameLogicHandler game = new GameLogicHandler(boardSize: 3);
+
+            // create a 3x3 board with 'S's in all spaces except center
+            game.UpdateInternalBoardState(0, 0, "S");
+            game.UpdateInternalBoardState(0, 1, "S");
+            game.UpdateInternalBoardState(0, 2, "S");
+            game.UpdateInternalBoardState(1, 0, "S");
+            game.UpdateInternalBoardState(1, 2, "S");
+            game.UpdateInternalBoardState(2, 0, "S");
+            game.UpdateInternalBoardState(2, 1, "S");
+            game.UpdateInternalBoardState(2, 2, "S");
+
+            // ACT
+
+            // place 'O' in the middle to make 4 SOSs
+            MoveInfo move = new MoveInfo(1, 1, "O");
+            SOSInfo sosInfo = game.GetSOSInfo(move);
+
+            // extract the endpoint indices through which lines are drawn
+            List<Vector2> vertcialSOSEndpoints = sosInfo.StartEndCoords[0];
+            List<Vector2> horizontalSOSEndpoints = sosInfo.StartEndCoords[1];
+            List<Vector2> upLeftSOSEndpoints = sosInfo.StartEndCoords[2];
+            List<Vector2> upRightSOSEndpoints = sosInfo.StartEndCoords[3];
+
+            // ASSERT
+
+            // vertical pair
+            Assert.AreEqual(vertcialSOSEndpoints[0], new Vector2(2, 1));
+            Assert.AreEqual(vertcialSOSEndpoints[1], new Vector2(0, 1));
+
+            // horizontal pair
+            Assert.AreEqual(horizontalSOSEndpoints[0], new Vector2(1, 0));
+            Assert.AreEqual(horizontalSOSEndpoints[1], new Vector2(1, 2));
+
+            // diagonal up left pair
+            Assert.AreEqual(upLeftSOSEndpoints[0], new Vector2(2, 2));
+            Assert.AreEqual(upLeftSOSEndpoints[1], new Vector2(0, 0));
+
+            // diagonal up right pair
+            Assert.AreEqual(upRightSOSEndpoints[0], new Vector2(2, 0));
+            Assert.AreEqual(upRightSOSEndpoints[1], new Vector2(0, 2));
+
+
+        }
+
+
+        [TestMethod]
+        public void TestFillingBoard()
+        {
+            // ARRANGE
+
+            GameLogicHandler game = new GameLogicHandler(boardSize: 3);
+
+            // create a 3x3 board with '0's in all spaces except center
+            game.UpdateInternalBoardState(0, 0, "0");
+            game.UpdateInternalBoardState(0, 1, "0");
+            game.UpdateInternalBoardState(0, 2, "0");
+            game.UpdateInternalBoardState(1, 0, "0");
+            game.UpdateInternalBoardState(1, 2, "0");
+            game.UpdateInternalBoardState(2, 0, "0");
+            game.UpdateInternalBoardState(2, 1, "0");
+            game.UpdateInternalBoardState(2, 2, "0");
+
+            // assert the board is not full
+            Assert.AreEqual(game.IsBoardFull(), false);
+
+            // ACT
+
+            // simulate placing an 'O' in the remaining cell, filling the board
+            game.UpdateInternalBoardState(1, 1, "O");
+
+            // ASSERT
+
+            // assert that the board is now full
+            Assert.AreEqual(game.IsBoardFull(), true);
         }
     }
 }

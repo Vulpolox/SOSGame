@@ -49,7 +49,7 @@ namespace SOSGame
         protected const int _r = 1;     // the row index at which the board will be displayed on the outer grid
         protected const int _c = 1;     // the column index at which the board will be displayed on the outer grid
 
-        protected Vector2 boardLoc = new Vector2(390, 200);  // the x and y coordinates of the top left corner of the game board
+        protected Vector2 boardLoc = new Vector2(389, 200);  // the x and y coordinates of the top left corner of the game board
 
 
         // constructor
@@ -320,6 +320,7 @@ namespace SOSGame
             this.gameLogicHandler.UpdateInternalBoardState(rowIndex, columnIndex, moveLetter);
         }
         
+
         // method for determining if the next turn is to be made by a computer
         public bool IsComputerTurnNext(SOSInfo sosInfo)
         {
@@ -347,89 +348,6 @@ namespace SOSGame
         }
 
 
-        // method for finding the endpoints from which each line will be drawn
-        // to mark newly formed SOSs
-        public List<List<Vector2>> GetLineEndpoints(SOSInfo sosInfo)
-        {
-            List<List<Vector2>> endpointCoordinates = new List<List<Vector2>>();
-
-            foreach (var coordinateSet in sosInfo.StartEndCoords)
-            {
-                // indices of the buttons between which the line will be drawn
-                Vector2 startIndex = coordinateSet[0];
-                Vector2 endIndex = coordinateSet[1];
-
-                // find the positions of the centers of the two buttons that
-                // define the bounds of the SOS so that a line can be drawn between them
-                Vector2 startCoords = GetCenter(GetButtonPosition(startIndex));
-                Vector2 endCoords = GetCenter(GetButtonPosition(endIndex));
-
-                // add endpoints to temporary List
-                List<Vector2> endpointsToAdd = new List<Vector2>
-                {
-                   startCoords, endCoords
-                };
-
-                // add temporary list to the one that will be returned
-                endpointCoordinates.Add(endpointsToAdd);
-            }
-
-            return endpointCoordinates;
-        }
-
-
-        // method for finding the absolute position (top left corner) of a button
-        // given its row and column indices
-        public Vector2 GetButtonPosition(Vector2 buttonArrayIndices)
-        {
-            // calculate the side length of button by dividing board dimensions (300x300 px)
-            // by number of buttons per side
-            float buttonSideLength = 300 / this.size;
-
-            // unpack row and column indices of the button into variables
-            // for readability
-            int rowIndex = (int)buttonArrayIndices.X;
-            int columnIndex = (int)buttonArrayIndices.Y;
-
-            // calculate and return the top left position of the button
-            return new Vector2(this.boardLoc.X + (columnIndex * buttonSideLength),
-                               this.boardLoc.Y + (rowIndex * buttonSideLength));
-        }
-
-
-        // method that takes the absolute position (top left) of a button
-        // and returns the center position of said button
-        public Vector2 GetCenter(Vector2 buttonPos)
-        {
-            // calculate the button side length
-            float buttonSideLength = 300 / this.size;
-
-            // return the position of the center of the button
-            return new Vector2(buttonPos.X + (0.5f * buttonSideLength),
-                               buttonPos.Y + (0.5f * buttonSideLength));
-        }
-
-
-        // method for creating lines from a set of endpoint pairs
-        public List<Line> CreateLines(List<List<Vector2>> lineEndpoints)
-        {
-            List<Line> lines = new List<Line>();
-
-            // calculate the color the lines should be based on the
-            // current player's turn
-            Color lineColor = gameLogicHandler.GetPlayerTurnColorName() == "Blue" ? Color.Blue : Color.Red;
-
-            // create a line for each enpointPair
-            foreach (var endpointPair in lineEndpoints)
-            {
-                Line lineToAdd = new Line(endpointPair[0], endpointPair[1], lineColor);
-                lines.Add(lineToAdd);
-            }
-
-            return lines;
-        }
-
-
         // sends line information to the Monogame Game
         // instance for drawing given an SOSInfo instance
         public void HandleLines(SOSInfo sosInfo)
@@ -437,7 +355,6 @@ namespace SOSGame
             List<Line> lines = gameLogicHandler.CreateLines(
                                gameLogicHandler.GetLineEndpoints(sosInfo, this.boardLoc, this.size));
 
-            //List<Line> lines = CreateLines(GetLineEndpoints(sosInfo));
 
             foreach (var line in lines)
             {

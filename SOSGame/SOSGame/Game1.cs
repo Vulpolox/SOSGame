@@ -127,14 +127,14 @@ namespace SOSGame
             // draw the line
             spriteBatch.Draw(
                      lineTexture,
-                     line.StartCoords,              // Position at startPoint
-                     null,                          // No source rectangle
-                     line.LineColor,                // Use the line's color
-                     rotation,                      // Rotate to match the line's angle
-                     Vector2.Zero,                  // Origin at top-left of the texture
-                     new Vector2(length, 3f),       // Scale width to length, height to 1 (thin line)
+                     line.StartCoords,              
+                     null,                          
+                     line.LineColor,                
+                     rotation,                      
+                     Vector2.Zero,                  
+                     new Vector2(length, 3f),       
                      SpriteEffects.None,
-                     0f);                           // Layer depth
+                     0f);
         }
 
 
