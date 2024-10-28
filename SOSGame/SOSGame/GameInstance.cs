@@ -434,7 +434,10 @@ namespace SOSGame
         // instance for drawing given an SOSInfo instance
         public void HandleLines(SOSInfo sosInfo)
         {
-            List<Line> lines = CreateLines(GetLineEndpoints(sosInfo));
+            List<Line> lines = gameLogicHandler.CreateLines(
+                               gameLogicHandler.GetLineEndpoints(sosInfo, this.boardLoc, this.size));
+
+            //List<Line> lines = CreateLines(GetLineEndpoints(sosInfo));
 
             foreach (var line in lines)
             {

@@ -134,12 +134,94 @@ namespace SOSGame
         public String internalBoardStateRef(Vector2 coordinates)  { return internalBoardStateRef((int)coordinates.X, (int)coordinates.Y); }
 
 
-
-        // ************************************************************************************************* //
-
+        // **** LINE CALCULATIONS ************************************************************************************ //
 
 
-        // algorithms
+        // method for finding the endpoints from which each line will be drawn
+        // to mark newly formed SOSs
+        public List<List<Vector2>> GetLineEndpoints(SOSInfo sosInfo, Vector2 boardLoc, int boardSize)
+        {
+            List<List<Vector2>> endpointCoordinates = new List<List<Vector2>>();
+
+            foreach (var coordinateSet in sosInfo.StartEndCoords)
+            {
+                // indices of the buttons between which the line will be drawn
+                Vector2 startIndex = coordinateSet[0];
+                Vector2 endIndex = coordinateSet[1];
+
+                // find the positions of the centers of the two buttons that
+                // define the bounds of the SOS so that a line can be drawn between them
+                Vector2 startCoords = GetCenter(GetButtonPosition(startIndex, boardLoc, boardSize), boardSize);
+                Vector2 endCoords = GetCenter(GetButtonPosition(endIndex, boardLoc, boardSize), boardSize);
+
+                // add endpoints to temporary List
+                List<Vector2> endpointsToAdd = new List<Vector2>
+                {
+                   startCoords, endCoords
+                };
+
+                // add temporary list to the one that will be returned
+                endpointCoordinates.Add(endpointsToAdd);
+            }
+
+            return endpointCoordinates;
+        }
+
+
+        // method for finding the absolute position (top left corner) of a button
+        // given its row and column indices
+        public Vector2 GetButtonPosition(Vector2 buttonArrayIndices, Vector2 boardLoc, int boardSize)
+        {
+            // calculate the side length of button by dividing board dimensions (const 300x300 px)
+            // by number of buttons per side
+            float buttonSideLength = (300 - (boardSize - 1)) / boardSize;
+
+            // unpack row and column indices of the button into variables
+            // for readability
+            int rowIndex = (int)buttonArrayIndices.X;
+            int columnIndex = (int)buttonArrayIndices.Y;
+
+            // calculate and return the top left position of the button
+            return new Vector2(boardLoc.X + (columnIndex * buttonSideLength) + columnIndex,
+                               boardLoc.Y + (rowIndex * buttonSideLength) + rowIndex);
+        }
+
+
+        // method that takes the absolute position (top left) of a button
+        // and returns the center position of said button
+        public Vector2 GetCenter(Vector2 buttonPos, int boardSize)
+        {
+            // calculate the button side length
+            float buttonSideLength = (300 - (boardSize - 1)) / boardSize;
+
+            // return the position of the center of the button
+            return new Vector2(buttonPos.X + (0.5f * buttonSideLength),
+                               buttonPos.Y + (0.5f * buttonSideLength));
+        }
+
+
+        // method for creating lines from a set of endpoint pairs
+        public List<Line> CreateLines(List<List<Vector2>> lineEndpoints)
+        {
+            List<Line> lines = new List<Line>();
+
+            // calculate the color the lines should be based on the
+            // current player's turn
+            Color lineColor = this.GetPlayerTurnColorName() == "Blue" ? Color.Blue : Color.Red;
+
+            // create a line for each enpointPair
+            foreach (var endpointPair in lineEndpoints)
+            {
+                Line lineToAdd = new Line(endpointPair[0], endpointPair[1], lineColor);
+                lines.Add(lineToAdd);
+            }
+
+            return lines;
+        }
+
+
+        // **** ALGORITHMS *************************************************************************************** //
+
 
         // sos-finding algorithm using linear algebra
         public SOSInfo GetSOSInfo(MoveInfo move)
@@ -224,7 +306,7 @@ namespace SOSGame
 
             // DEFINE LISTS
 
-            // create a list of all possible moves that result in SOS creation
+            // create a list of all possible moves
 
             for (int r = 0; r < this.boardSize; r++)
             {
