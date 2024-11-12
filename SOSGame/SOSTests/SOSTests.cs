@@ -301,5 +301,100 @@ namespace SOSTests
             // assert that the board is now full
             Assert.AreEqual(game.IsBoardFull(), true);
         }
+
+
+        [TestMethod]
+        public void TestSOSMovePredicate()
+        {
+            // ARRANGE
+
+            // create a 3x3 board and place an S at indices (0, 0) and (0, 2)
+            GameLogicHandler game = new GameLogicHandler(boardSize: 3);
+
+            game.UpdateInternalBoardState(0, 0, "S");
+            game.UpdateInternalBoardState(0, 2, "S");
+
+            // create a move with letter "O" at index (0, 1)
+            MoveInfo move = new MoveInfo(0, 1, "O");
+
+            // ACT
+
+            // invoke the predicate
+            bool testValue = game.SOSMovePredicate(move);
+
+            // ASSERT
+
+            // assert that the game's SOSMovePredicate() function returns true when passing the move to it
+            Assert.IsTrue(testValue);
+        }
+
+
+        [TestMethod]
+        public void TestSmartMovePredicate()
+        {
+            // ARRANGE
+
+            // create a 5x5 board and populate it with an 'S' at index (0, 0)
+            GameLogicHandler game = new GameLogicHandler(boardSize: 5);
+
+            game.UpdateInternalBoardState(0, 0, "S");
+
+            // create a "smart" move and a "dumb" move
+            // smart move will not allow the next turn's player to create an SOS
+            // dumb move will
+            MoveInfo smartMove = new MoveInfo(0, 1, "S");
+            MoveInfo dumbMove = new MoveInfo(0, 1, "O");
+
+            // ACT
+
+            // invoke the predicate
+            bool smartTestValue = game.SmartMovePredicate(smartMove);
+            bool dumbTestValue = game.SmartMovePredicate(dumbMove);
+
+            // ASSERT
+
+            // assert the invocations of the predicate function returned true and false for the smart move
+            // and the dumb move respectively
+            Assert.IsTrue(smartTestValue);
+            Assert.IsFalse(dumbTestValue);
+        }
+
+
+        [TestMethod]
+        public void TestComputerSOSPlacement()
+        {
+            // ARRANGE
+
+            // create a 5x5 board and populate it with 'S's and 'O's such that there are
+            // 4 possible SOSs:
+
+            // S S S _ _
+            // S _ S _ _
+            // S S S _ _
+            // _ _ _ _ _
+            // _ _ _ _ _
+
+            GameLogicHandler game = new GameLogicHandler(boardSize: 5);
+            game.UpdateInternalBoardState(0, 0, "S");
+            game.UpdateInternalBoardState(0, 1, "S");
+            game.UpdateInternalBoardState(0, 2, "S");
+            game.UpdateInternalBoardState(1, 0, "S");
+            game.UpdateInternalBoardState(1, 2, "S");
+            game.UpdateInternalBoardState(2, 0, "S");
+            game.UpdateInternalBoardState(2, 1, "S");
+            game.UpdateInternalBoardState(2, 2, "S");
+
+            // ACT
+
+            // invoke the GenerateComputerMove() function
+            MoveInfo testMove = game.GenerateComputerMove();
+
+            // ASSERT
+
+            // the computer-generated move should be guaranteed to be an 'O' at index (1, 1)
+            Assert.AreEqual(testMove.MoveLetter, "O");
+            Assert.AreEqual(testMove.RowIndex, 1);
+            Assert.AreEqual(testMove.ColumnIndex, 1);
+        }
     }
 }
