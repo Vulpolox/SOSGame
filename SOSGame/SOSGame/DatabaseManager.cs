@@ -146,7 +146,7 @@ namespace SOSGame
                     connection.Open();
 
                     String query = @"
-                        TRUNCATE TABLE RecordedMoves;";
+                        DELETE FROM RecordedMoves;";
 
 
                     using (SQLiteCommand command = new SQLiteCommand(query, connection)) { command.ExecuteNonQuery(); }
