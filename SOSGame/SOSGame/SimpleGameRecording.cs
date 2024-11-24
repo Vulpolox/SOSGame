@@ -9,7 +9,7 @@ namespace SOSGame
 {
     public class SimpleGameRecording : SimpleGameInstance
     {
-        private RecordingInfo moves;
+        private List<MoveInfo> moves;
 
         public SimpleGameRecording(GUIHandler GUIRef, GameLogicHandler gameLogicHandler, int recordedSize) : base(GUIRef, gameLogicHandler, recordedSize)
         {
@@ -18,10 +18,10 @@ namespace SOSGame
             ToggleUnpressedButtons(false);
 
             // create reference to recording information
-            moves = GUIRef.recordingInfo;
+            moves = DatabaseManager.GetRecordedMoves();
 
             // play back the recorded moves if there are any
-            if (moves.RecordedMoves.Count > 0) { HandleRecordedMoves(); }
+            if (moves.Count > 0) { HandleRecordedMoves(); }
             else
             {
                 GUIRef.GetNewGameButton().Enabled = true;
@@ -50,8 +50,8 @@ namespace SOSGame
         private void InternalMoveHandler()
         {
             // pop the first move from the list of recorded moves
-            MoveInfo currentMove = moves.RecordedMoves[0];
-            moves.RecordedMoves.RemoveAt(0);
+            MoveInfo currentMove = moves[0];
+            moves.RemoveAt(0);
 
             // handle the move
             HandleMove(currentMove);
@@ -64,7 +64,7 @@ namespace SOSGame
             this.GUIRef.UpdateTurnLabel(this.gameLogicHandler.IsRedTurn());
 
             // if there are moves left, process the next one
-            if (moves.RecordedMoves.Count > 0) { HandleRecordedMoves(); }
+            if (moves.Count > 0) { HandleRecordedMoves(); }
             
             // otherwise, yield control back to the user
             else

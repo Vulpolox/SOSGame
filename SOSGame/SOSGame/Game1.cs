@@ -52,6 +52,9 @@ namespace SOSGame
             _lineTexture = new Texture2D(GraphicsDevice, 1, 1);
             _lineTexture.SetData(new[] { Color.White });
 
+            // Initialize DB
+            DatabaseManager.InitializeDatabase();
+
             base.Initialize();
         }
 

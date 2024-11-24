@@ -23,7 +23,7 @@ namespace SOSGame
             base.HandleMove(moveInfo);
 
             // record the move
-            GUIRef.recordingInfo.RecordMove(moveInfo);
+            DatabaseManager.RecordMove(moveInfo);
         }
     }
 }

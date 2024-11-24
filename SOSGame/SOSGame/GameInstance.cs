@@ -81,8 +81,9 @@ namespace SOSGame
             this.recordedSize = recordedSize;
 
             // initialize the board and place it in the outerGrid
-            int finalSize = this.recordedSize != -1 ? this.recordedSize : this.size;
-            this.buttonGrid = InitializeBoard(finalSize);
+            this.size = this.recordedSize != -1 ? this.recordedSize : this.size;
+            Console.WriteLine($"Size: {this.size}, RecordedSize: {this.recordedSize}, Final Size: {this.size}");
+            this.buttonGrid = InitializeBoard(this.size);
             Grid.SetRow(buttonGrid, _r);
             Grid.SetColumn(buttonGrid, _c);
             this.outerGrid.Widgets.Add(buttonGrid);
@@ -110,7 +111,7 @@ namespace SOSGame
             List<GridButton> rowToAdd = new List<GridButton>();
 
             // add columns and rows to the return grid
-            for (int i = 0; i < this.size; i++)
+            for (int i = 0; i < size; i++)
             {
                 returnGrid.RowsProportions.Add(new Proportion(ProportionType.Part, 1));
                 returnGrid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 1));

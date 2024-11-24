@@ -605,18 +605,23 @@ namespace SOSGame
             {      this.gameInstance = IsSimpleGame() ? 
                                        new SimpleGameInstance(this, this.gameLogicHandler) : 
                                        new GeneralGameInstance(this, this.gameLogicHandler);}
-            else { this.gameInstance = IsSimpleGame() ? 
-                                                         new SimpleRecordedGameInstance(this, this.gameLogicHandler) : 
-                                                         new GeneralRecordedGameInstance(this, this.gameLogicHandler);
+            else 
+            {      this.gameInstance = IsSimpleGame() ? 
+                                       new SimpleRecordedGameInstance(this, this.gameLogicHandler) : 
+                                       new GeneralRecordedGameInstance(this, this.gameLogicHandler);
             
                 // reset recording data so a new game can be recorded
                 this.recordingInfo = new RecordingInfo(this.GetBoardSize(), this.IsSimpleGame());
+                Console.WriteLine($"Creating Game Recording with Board Size; {this.GetBoardSize()}");
+
+                // reset the recorded moves in the DB
+                DatabaseManager.ClearRecordedMoves();
             }
         }
 
         public void OnReplayClick(object sender, EventArgs e)
         {
-            if (this.recordingInfo.IsEmpty)
+            if (DatabaseManager.GetNumberOfRecordedMoves() == 0)
             {
                 DisplayMessage("No Recording Data");
             }
