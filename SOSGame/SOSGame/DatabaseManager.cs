@@ -170,8 +170,8 @@ namespace SOSGame
                     connection.Open();
 
                     String query = @"
-                    SELECT COUNT(*)
-                    FROM RecordedMoves;";
+                        SELECT COUNT(*)
+                        FROM RecordedMoves;";
 
                     // return the number of rows
                     using (SQLiteCommand command = new SQLiteCommand(query, connection)) { return Convert.ToInt32(command.ExecuteScalar()); }
